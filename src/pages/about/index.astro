@@ -2,170 +2,125 @@
 import Layout from 'src/layouts/Layout.astro';
 ---
 
-<Layout title="About DocForge AI - Our Story">
-
+<Layout title="About Us - Pritchard Specialised Solutions">
 	<main>
-		<!-- Hero Section -->
-		<section class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-16 lg:py-24">
+		<!-- Page Header -->
+		<section class="relative overflow-hidden py-16 lg:py-24">
+			<div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 -z-10"></div>
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<nav class="mb-8" aria-label="Breadcrumb">
+					<div class="flex items-center space-x-2 text-sm">
+						<a href="/" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+							Home
+						</a>
+						<span class="text-gray-400 dark:text-gray-500">/</span>
+						<span class="text-gray-600 dark:text-gray-300">About</span>
+					</div>
+				</nav>
+
 				<div class="text-center">
-					<h1 class="text-4xl lg:text-5xl font-bold mb-6">
-						About DocForge AI
+					<h1 class="text-4xl lg:text-6xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+						About Us
 					</h1>
-					<p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-						We're on a mission to transform how developers understand and maintain code through AI-powered documentation.
+					<p class="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+						We are a team of passionate IT professionals dedicated to helping businesses succeed.
 					</p>
+					<div class="flex flex-col sm:flex-row gap-4 justify-center">
+						<a href="/contact" class="px-8 py-4 bg-blue-600 text-white text-lg rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
+							Work With Us
+						</a>
+						<a href="/services" class="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-lg rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700">
+							Our Services
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- Story Section -->
+		<!-- Our Story Section -->
 		<section class="py-16 lg:py-24">
-			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div class="prose prose-lg dark:prose-invert mx-auto">
-					<h2 class="text-3xl font-bold mb-6">Our Story</h2>
-					<p class="text-gray-600 dark:text-gray-300 mb-6">
-						DocForge AI was born from a simple observation: developers spend countless hours trying to understand existing codebases, whether they're joining a new team, maintaining legacy systems, or returning to their own code months later.
-					</p>
-					<p class="text-gray-600 dark:text-gray-300 mb-6">
-						Traditional documentation often falls short—it's either outdated, incomplete, or simply doesn't exist. We realized that with the advent of advanced language models like Claude and Gemini, we could solve this problem once and for all.
-					</p>
-					<p class="text-gray-600 dark:text-gray-300 mb-8">
-						Our platform doesn't just parse code—it understands it. By combining cutting-edge AI with vector embeddings and semantic search, we create documentation that's comprehensive, searchable, and actually useful.
-					</p>
-
-					<h2 class="text-3xl font-bold mb-6 mt-12">The Problem We Solve</h2>
-					<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
-						<ul class="space-y-4">
-							<li class="flex items-start">
-								<svg class="w-6 h-6 text-red-500 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-									<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-								</svg>
-								<div>
-									<strong class="text-gray-900 dark:text-gray-100">70% of developers</strong>
-									<p class="text-gray-600 dark:text-gray-300">Say understanding existing code is their biggest challenge</p>
-								</div>
-							</li>
-							<li class="flex items-start">
-								<svg class="w-6 h-6 text-red-500 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-									<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-								</svg>
-								<div>
-									<strong class="text-gray-900 dark:text-gray-100">40+ hours per month</strong>
-									<p class="text-gray-600 dark:text-gray-300">Average time spent deciphering undocumented code</p>
-								</div>
-							</li>
-							<li class="flex items-start">
-								<svg class="w-6 h-6 text-red-500 mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-									<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-								</svg>
-								<div>
-									<strong class="text-gray-900 dark:text-gray-100">$85 billion annually</strong>
-									<p class="text-gray-600 dark:text-gray-300">Lost productivity due to poor documentation</p>
-								</div>
-							</li>
-						</ul>
-					</div>
-
-					<h2 class="text-3xl font-bold mb-6 mt-12">Our Approach</h2>
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-						<div class="text-center">
-							<div class="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-								<svg class="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-								</svg>
-							</div>
-							<h3 class="text-xl font-semibold mb-2">AI Understanding</h3>
-							<p class="text-gray-600 dark:text-gray-300">Not just parsing, but truly understanding code logic and intent</p>
-						</div>
-						<div class="text-center">
-							<div class="w-20 h-20 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-								<svg class="w-10 h-10 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-								</svg>
-							</div>
-							<h3 class="text-xl font-semibold mb-2">Comprehensive Docs</h3>
-							<p class="text-gray-600 dark:text-gray-300">From high-level architecture to detailed method descriptions</p>
-						</div>
-						<div class="text-center">
-							<div class="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-								<svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-								</svg>
-							</div>
-							<h3 class="text-xl font-semibold mb-2">Intelligent Search</h3>
-							<p class="text-gray-600 dark:text-gray-300">Vector embeddings enable semantic search across your entire codebase</p>
-						</div>
-					</div>
-
-					<h2 class="text-3xl font-bold mb-6 mt-12">Our Values</h2>
-					<div class="space-y-6">
-						<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-							<h3 class="text-xl font-semibold mb-3 flex items-center">
-								<span class="text-blue-600 dark:text-blue-400 mr-3">🎯</span>
-								Developer-First
-							</h3>
-							<p class="text-gray-600 dark:text-gray-300">
-								Every feature we build starts with developer needs. We're developers ourselves, and we understand the pain of working with undocumented code.
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+					<div>
+						<h2 class="text-3xl lg:text-4xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+							Our Story
+						</h2>
+						<div class="space-y-6 text-gray-600 dark:text-gray-300">
+							<p class="text-lg">
+								Pritchard Specialised Solutions was founded in 2025 with a mission to provide small and medium-sized businesses with the same level of IT expertise and support that large enterprises enjoy. Our founders, Alexander Walker and Joshua Sack, saw a need for a customer-centric IT services company that could provide customized solutions to meet the unique needs of each client.
 							</p>
-						</div>
-						<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-							<h3 class="text-xl font-semibold mb-3 flex items-center">
-								<span class="text-purple-600 dark:text-purple-400 mr-3">🔒</span>
-								Security & Privacy
-							</h3>
-							<p class="text-gray-600 dark:text-gray-300">
-								Your code is your intellectual property. We never train our models on your data, and we're SOC 2 compliant with end-to-end encryption.
-							</p>
-						</div>
-						<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-							<h3 class="text-xl font-semibold mb-3 flex items-center">
-								<span class="text-green-600 dark:text-green-400 mr-3">🚀</span>
-								Continuous Innovation
-							</h3>
-							<p class="text-gray-600 dark:text-gray-300">
-								As AI technology evolves, so do we. We're constantly improving our models and adding new features to make documentation even better.
+							<p class="text-lg">
+								Pritchard Specialised Solutions is committed to becoming a leading provider of IT services in the region, with a team of certified professionals who are passionate about helping businesses succeed. We are dedicated to building lasting relationships with our clients and providing them with the highest quality service and support.
 							</p>
 						</div>
 					</div>
 
-					<h2 class="text-3xl font-bold mb-6 mt-12">The Team</h2>
-					<p class="text-gray-600 dark:text-gray-300 mb-8">
-						DocForge AI is built by a team of engineers, researchers, and designers who've experienced the documentation problem firsthand. We come from companies like Google, Microsoft, and Amazon, where we've seen how poor documentation can slow down even the best teams.
-					</p>
-					<p class="text-gray-600 dark:text-gray-300 mb-8">
-						Our diverse backgrounds in machine learning, software engineering, and user experience design come together to create a product that's not just powerful, but also intuitive and enjoyable to use.
-					</p>
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+						<div class="relative">
+							<div class="flex items-center space-x-4">
+								<div class="flex-shrink-0">
+									<div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+										<i class="fas fa-calendar-alt text-blue-600 dark:text-blue-400"></i>
+									</div>
+								</div>
+								<div>
+									<div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">2025</div>
+									<h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Company Founded</h4>
+									<p class="text-gray-600 dark:text-gray-300">
+										Alexander Walker and Joshua Sack establish Pritchard Specialised Solutions
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- CTA Section -->
-		<section class="py-16 lg:py-24 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-				<h2 class="text-3xl lg:text-4xl font-bold mb-4">
-					Join Us in Revolutionizing Code Documentation
-				</h2>
-				<p class="text-xl mb-8 opacity-90">
-					Start your journey towards better documentation today.
-				</p>
-				<div class="flex flex-col sm:flex-row gap-4 justify-center">
-					<a href="/demo" class="px-8 py-4 bg-white text-blue-600 text-lg rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl font-semibold">
-						Try DocForge AI Free
-					</a>
-					<a href="/contact" class="px-8 py-4 bg-transparent text-white text-lg rounded-lg hover:bg-white/10 transition-colors border-2 border-white">
-						Get in Touch
-					</a>
+		<!-- Meet the Team Section -->
+		<section class="py-16 lg:py-24 bg-gray-50 dark:bg-gray-900">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="text-center mb-12">
+					<h2 class="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+						Meet the Team
+					</h2>
+					<p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+						Our team of experts is here to help you with all your IT needs.
+					</p>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+					<!-- Alexander Walker -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow">
+						<div class="mb-6">
+							<picture>
+								<source srcset="./assets/Alex.webp" type="image/webp" />
+								<img src="./assets/Alex.webp" alt="Alexander Walker" class="w-32 h-32 rounded-full object-cover mx-auto shadow-lg" />
+							</picture>
+						</div>
+						<h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Alexander Walker</h3>
+						<p class="text-blue-600 dark:text-blue-400 font-medium mb-4">Co-Founder & CEO</p>
+						<p class="text-gray-600 dark:text-gray-300">
+							Leading our strategic vision and client relationships with extensive IT industry experience.
+						</p>
+					</div>
+
+					<!-- Joshua Sack -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow">
+						<div class="mb-6">
+							<picture>
+								<source srcset="./assets/josh.webp" type="image/webp" />
+								<img src="./assets/josh.webp" alt="Joshua Sack" class="w-32 h-32 rounded-full object-cover mx-auto shadow-lg" />
+							</picture>
+						</div>
+						<h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Joshua Sack</h3>
+						<p class="text-purple-600 dark:text-purple-400 font-medium mb-4">Co-Founder & CTO</p>
+						<p class="text-gray-600 dark:text-gray-300">
+							Driving technical innovation and ensuring our solutions meet the highest standards of excellence.
+						</p>
+					</div>
 				</div>
 			</div>
 		</section>
 	</main>
-
-	<footer class="border-t border-gray-200 dark:border-gray-800 py-12">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-center text-gray-600 dark:text-gray-400">
-				<p>&copy; 2025 DocForge AI. All rights reserved.</p>
-			</div>
-		</div>
-	</footer>
 </Layout>

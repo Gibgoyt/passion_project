@@ -13,10 +13,29 @@ const { title } = Astro.props
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
+		<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+		<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+		<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
+		<link rel="icon" type="image/x-icon" href="./assets/logo.webp" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<meta name="description" content="Professional IT services, cybersecurity, automation, and cloud solutions for businesses. Expert support from Pritchard Specialised Solutions." />
+		<meta name="keywords" content="IT services, cybersecurity, cloud solutions, automation, network management, Johannesburg, South Africa, IT consulting" />
+		<meta name="author" content="Pritchard Specialised Solutions" />
+		<meta name="robots" content="index, follow" />
+		<meta property="og:title" content="Pritchard Specialised Solutions - Expert IT Services & Cybersecurity" />
+		<meta property="og:description" content="Professional IT services, cybersecurity, automation, and cloud solutions for businesses. Expert support from Pritchard Specialised Solutions." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://pritchard-solutions.com" />
+		<meta property="og:image" content="./assets/logo.webp" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Pritchard Specialised Solutions - Expert IT Services & Cybersecurity" />
+		<meta name="twitter:description" content="Professional IT services, cybersecurity, automation, and cloud solutions for businesses." />
+		<link rel="canonical" href="https://pritchard-solutions.com/" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 		<script is:inline>
 			// Prevent flash of light mode
 			const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
@@ -33,19 +52,24 @@ const { title } = Astro.props
 			<nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="flex justify-between items-center h-16">
 					<div class="flex items-center">
-						<a href="/" class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-							ASSQ-CloudFlare
+						<a href="/" class="flex items-center space-x-2">
+							<picture>
+								<source srcset="./assets/logo.webp" type="image/webp" />
+								<img src="./assets/logo.webp" alt="Pritchard Solutions Logo" class="h-8 w-8" />
+							</picture>
+							<span class="text-lg font-semibold text-gray-900 dark:text-gray-100 hidden sm:block">
+								Pritchard Specialised Solutions
+							</span>
 						</a>
 					</div>
 					
 					<!-- Desktop Navigation -->
 					<div class="hidden md:flex items-center space-x-8">
 						<a href="/" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Home</a>
-						<a href="/docs" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Docs</a>
-						<a href="/demo" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Demo</a>
-						<a href="/apps" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Apps</a>
-						<a href="/cloudflare" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-							CloudFlare
+						<a href="/services" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Services</a>
+						<a href="/about" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">About</a>
+						<a href="/contact" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+							Contact Us
 						</a>
 					</div>
 					
@@ -75,11 +99,10 @@ const { title } = Astro.props
 				<div class="md:hidden hidden" id="mobile-menu">
 					<div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
 						<a href="/" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">Home</a>
-						<a href="/docs" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">Docs</a>
-						<a href="/demo" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">Demo</a>
-						<a href="/apps" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">Apps</a>
-						<a href="/cloudflare" class="block mx-3 my-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center">
-							CloudFlare
+						<a href="/services" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">Services</a>
+						<a href="/about" class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors">About</a>
+						<a href="/contact" class="block mx-3 my-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center">
+							Contact Us
 						</a>
 					</div>
 				</div>

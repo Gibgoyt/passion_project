@@ -1,5 +1,5 @@
 declare module "astro:actions" {
-	type Actions = typeof import("/Users/ahmed/Projects/Astro/scalable-frontend/src/actions")["server"];
+	type Actions = typeof import("/Users/ahmed/Projects_Josam/Astro/cloudflare_frontend/src/actions/index.ts")["server"];
 
 	export const actions: Actions;
 }

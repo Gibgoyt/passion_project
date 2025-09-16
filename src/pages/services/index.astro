@@ -1,0 +1,196 @@
+---
+import Layout from 'src/layouts/Layout.astro';
+---
+
+<Layout title="Services - Pritchard Specialised Solutions">
+	<main>
+		<!-- Page Header -->
+		<section class="relative overflow-hidden py-16 lg:py-24">
+			<div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 -z-10"></div>
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<nav class="mb-8" aria-label="Breadcrumb">
+					<div class="flex items-center space-x-2 text-sm">
+						<a href="/" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+							Home
+						</a>
+						<span class="text-gray-400 dark:text-gray-500">/</span>
+						<span class="text-gray-600 dark:text-gray-300">Services</span>
+					</div>
+				</nav>
+
+				<div class="text-center">
+					<h1 class="text-4xl lg:text-6xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+						Our Services
+					</h1>
+					<p class="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+						We provide a wide range of IT services to keep your business running smoothly and securely.
+					</p>
+					<div class="flex flex-col sm:flex-row gap-4 justify-center">
+						<a href="/contact" class="px-8 py-4 bg-blue-600 text-white text-lg rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
+							Get Started Today
+						</a>
+						<a href="#services" class="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-lg rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700">
+							Explore Services
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Services Section -->
+		<section id="services" class="py-16 lg:py-24">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="text-center mb-12">
+					<h2 class="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+						What We Offer
+					</h2>
+					<p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+						From cybersecurity to cloud solutions, we have the expertise to handle all your IT needs.
+					</p>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+					<!-- Cybersecurity Solutions -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+							<i class="fas fa-shield-alt text-2xl text-blue-600 dark:text-blue-400"></i>
+						</div>
+						<h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">Cybersecurity Solutions</h3>
+						<p class="text-gray-600 dark:text-gray-300 mb-6">
+							Our comprehensive security services protect your business from cyber threats. We offer penetration testing, vulnerability assessments, 24/7 monitoring, and employee training to keep your data safe.
+						</p>
+						<a href="/contact?service=cybersecurity" class="inline-block px-6 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+							Get Protected
+						</a>
+					</div>
+
+					<!-- System Automation -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+							<i class="fas fa-cogs text-2xl text-green-600 dark:text-green-400"></i>
+						</div>
+						<h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">System Automation</h3>
+						<p class="text-gray-600 dark:text-gray-300 mb-6">
+							Our custom automation solutions streamline your workflows, reduce manual errors, and increase efficiency. We help you automate repetitive tasks so you can focus on growing your business.
+						</p>
+						<a href="/contact?service=automation" class="inline-block px-6 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+							Automate Now
+						</a>
+					</div>
+
+					<!-- Cloud & Data Services -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+							<i class="fas fa-cloud text-2xl text-purple-600 dark:text-purple-400"></i>
+						</div>
+						<h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">Cloud & Data Services</h3>
+						<p class="text-gray-600 dark:text-gray-300 mb-6">
+							We help you leverage the power of the cloud with our expert migration, management, and data security services. We ensure your data is secure, accessible, and optimized for performance.
+						</p>
+						<a href="/contact?service=cloud" class="inline-block px-6 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors">
+							Go Cloud
+						</a>
+					</div>
+
+					<!-- Network Management -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4">
+							<i class="fas fa-network-wired text-2xl text-red-600 dark:text-red-400"></i>
+						</div>
+						<h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">Network Management</h3>
+						<p class="text-gray-600 dark:text-gray-300 mb-6">
+							We provide complete network infrastructure design, implementation, and ongoing management to ensure your network is reliable, secure, and scalable. We offer 24/7 support to keep your business connected.
+						</p>
+						<a href="/contact?service=network" class="inline-block px-6 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors">
+							Optimize Network
+						</a>
+					</div>
+
+					<!-- IT Support & Consulting -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mb-4">
+							<i class="fas fa-headset text-2xl text-indigo-600 dark:text-indigo-400"></i>
+						</div>
+						<h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">IT Support & Consulting</h3>
+						<p class="text-gray-600 dark:text-gray-300 mb-6">
+							Our team of IT experts is here to help you with all your technology needs. We offer remote and on-site support, as well as strategic consulting to help you make the right IT decisions for your business.
+						</p>
+						<a href="/contact?service=support" class="inline-block px-6 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+							Get Support
+						</a>
+					</div>
+
+					<!-- Custom Software Development -->
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+						<div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+							<i class="fas fa-laptop-code text-2xl text-orange-600 dark:text-orange-400"></i>
+						</div>
+						<h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">Custom Software Development</h3>
+						<p class="text-gray-600 dark:text-gray-300 mb-6">
+							We build custom software solutions to meet the unique needs of your business. From web applications to mobile apps, we have the expertise to bring your ideas to life.
+						</p>
+						<a href="/contact?service=development" class="inline-block px-6 py-2 bg-orange-600 text-white text-sm rounded-lg hover:bg-orange-700 transition-colors">
+							Build Solution
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Why Choose Us Section -->
+		<section class="py-16 lg:py-24 bg-gray-50 dark:bg-gray-900">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="text-center mb-12">
+					<h2 class="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+						Why Choose Us?
+					</h2>
+					<p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+						We are committed to providing our clients with the best possible IT services and support.
+					</p>
+				</div>
+
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+					<div class="space-y-8">
+						<div>
+							<h3 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Expertise and Experience</h3>
+							<p class="text-gray-600 dark:text-gray-300">
+								Our team of certified IT professionals brings extensive experience helping businesses of all sizes with their technology needs. We stay up-to-date with the latest industry trends to ensure that we provide our clients with the most effective solutions.
+							</p>
+						</div>
+
+						<div>
+							<h3 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Customer-Centric Approach</h3>
+							<p class="text-gray-600 dark:text-gray-300">
+								We believe in building long-term relationships with our clients based on trust, integrity, and mutual respect. We take the time to understand your business and your unique needs so that we can provide you with the best possible service.
+							</p>
+						</div>
+
+						<div>
+							<h3 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Proactive and Responsive</h3>
+							<p class="text-gray-600 dark:text-gray-300">
+								We take a proactive approach to IT management, identifying and addressing potential issues before they become problems. And when you do need us, our team is always here to provide you with prompt and responsive support.
+							</p>
+						</div>
+					</div>
+
+					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+						<div class="grid grid-cols-1 gap-8">
+							<div class="text-center">
+								<div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">24/7</div>
+								<div class="text-gray-600 dark:text-gray-300 font-medium">Support</div>
+							</div>
+							<div class="text-center">
+								<div class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">2025</div>
+								<div class="text-gray-600 dark:text-gray-300 font-medium">Founded</div>
+							</div>
+							<div class="text-center">
+								<div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">Expert</div>
+								<div class="text-gray-600 dark:text-gray-300 font-medium">Team</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>

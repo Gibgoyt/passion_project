@@ -1,0 +1,90 @@
+---
+import Layout from 'src/layouts/Layout.astro';
+import ContactForm from 'src/components-svelte/ContactForm.svelte';
+---
+
+<Layout title="Contact Us - Pritchard Specialised Solutions">
+	<main>
+		<!-- Page Header -->
+		<section class="relative overflow-hidden py-16 lg:py-24">
+			<div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 -z-10"></div>
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<nav class="mb-8" aria-label="Breadcrumb">
+					<div class="flex items-center space-x-2 text-sm">
+						<a href="/" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+							Home
+						</a>
+						<span class="text-gray-400 dark:text-gray-500">/</span>
+						<span class="text-gray-600 dark:text-gray-300">Contact</span>
+					</div>
+				</nav>
+
+				<div class="text-center">
+					<h1 class="text-4xl lg:text-6xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+						Contact Us
+					</h1>
+					<p class="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+						Ready to transform your business with our IT solutions? Get in touch today.
+					</p>
+					<div class="flex flex-col sm:flex-row gap-4 justify-center">
+						<a href="#contact" class="px-8 py-4 bg-blue-600 text-white text-lg rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
+							Send Message
+						</a>
+						<a href="/services" class="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-lg rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-lg hover:shadow-xl border border-gray-200 dark:border-gray-700">
+							View Services
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Contact Section -->
+		<section id="contact" class="py-16 lg:py-24">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+					<!-- Contact Info -->
+					<div>
+						<h2 class="text-3xl lg:text-4xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+							Get In Touch
+						</h2>
+						<p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+							We're here to help you with all your IT needs. Contact us for a free consultation and let's discuss how we can help your business grow.
+						</p>
+
+						<div class="space-y-6">
+							<!-- Phone Contact -->
+							<div class="flex items-start space-x-4">
+								<div class="flex-shrink-0">
+									<div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+										<i class="fas fa-phone text-blue-600 dark:text-blue-400"></i>
+									</div>
+								</div>
+								<div>
+									<h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Phone</h4>
+									<p class="text-gray-600 dark:text-gray-300">Available during business hours</p>
+								</div>
+							</div>
+
+							<!-- Location Contact -->
+							<div class="flex items-start space-x-4">
+								<div class="flex-shrink-0">
+									<div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+										<i class="fas fa-map-marker-alt text-purple-600 dark:text-purple-400"></i>
+									</div>
+								</div>
+								<div>
+									<h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Location</h4>
+									<p class="text-gray-600 dark:text-gray-300">Johannesburg, South Africa</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Contact Form -->
+					<ContactForm client:load />
+				</div>
+			</div>
+		</section>
+	</main>
+
+</Layout>
