@@ -6,8 +6,8 @@ use wasm_bindgen::JsCast;
 mod components;
 mod pages;
 
-use components::{Sidebar, DarkMode};
-use pages::{Dashboard, Crm};
+use components::{Sidebar, Header, DarkMode};
+use pages::{Dashboard, Database, Crm, Cicd, Settings};
 
 fn initialize_dark_mode() -> bool {
     if let Some(window) = web_sys::window() {
@@ -47,23 +47,31 @@ fn App() -> impl IntoView {
     // Create derived signal for dynamic classes
     let bg_class = move || {
         if dark_mode.get() {
-            "min-h-screen bg-zinc-900 text-zinc-100 flex"
+            "min-h-screen bg-zinc-900 text-zinc-100"
         } else {
-            "min-h-screen bg-gray-50 text-gray-900 flex"
+            "min-h-screen bg-gray-50 text-gray-900"
         }
     };
 
     view! {
         <Router>
             <div class=bg_class>
-                <Sidebar />
-                <main class="flex-1">
-                    <Routes>
-                        <Route path="/admin" view=Dashboard/>
-                        <Route path="/admin/dashboard" view=Dashboard/>
-                        <Route path="/admin/crm" view=Crm/>
-                    </Routes>
-                </main>
+                <div class="flex h-screen overflow-hidden">
+                    <Sidebar />
+                    <div class="flex flex-col flex-1 overflow-hidden">
+                        <Header />
+                        <main class="flex-1 overflow-y-auto">
+                            <Routes>
+                                <Route path="/admin" view=Dashboard/>
+                                <Route path="/admin/dashboard" view=Dashboard/>
+                                <Route path="/admin/database" view=Database/>
+                                <Route path="/admin/crm" view=Crm/>
+                                <Route path="/admin/ci-cd" view=Cicd/>
+                                <Route path="/admin/settings" view=Settings/>
+                            </Routes>
+                        </main>
+                    </div>
+                </div>
             </div>
         </Router>
     }

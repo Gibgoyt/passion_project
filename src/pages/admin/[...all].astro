@@ -1,6 +1,26 @@
 ---
 export const prerender = false;
 import 'src/styles/global.css'
+
+// ==== ROUTE VALIDATION LOGIC ====
+// Define valid admin routes
+type ValidAdminRoute = '' | 'dashboard' | 'database' | 'crm' | 'ci-cd' | 'settings'
+
+// Get the route from URL params
+const routeSegment = Astro.params.all || ''
+console.log('🔒 [ADMIN] Processing admin route:', Astro.url.pathname, 'Segment:', routeSegment)
+
+// Validate route against known routes
+const validRoutes: ValidAdminRoute[] = ['', 'dashboard', 'database', 'crm', 'ci-cd', 'settings']
+
+// Check if the route is valid
+if (routeSegment && !validRoutes.includes(routeSegment as ValidAdminRoute)) {
+  console.log('❌ [ADMIN] Invalid route, redirecting to dashboard:', routeSegment)
+  return Astro.redirect('/admin/dashboard', 302)
+}
+
+console.log('✅ [ADMIN] Valid route accessed:', routeSegment || 'home')
+// ==== END ROUTE VALIDATION LOGIC ====
 ---
 
 <!DOCTYPE html>
