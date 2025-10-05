@@ -30,8 +30,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       formData = {
         name: body.name?.trim(),
         phone: body.phone?.trim(),
-        serviceInterest: body.service?.trim(),
-        message: body.message?.trim()
+        department: body.service?.trim(),
+        message: body.message?.trim(),
+        rawEmail: "placeholder@example.com" // Hardcoded as form doesn't provide it
       };
     } catch (error) {
       return new Response(

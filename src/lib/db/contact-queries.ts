@@ -3,36 +3,33 @@ import type { D1Database } from '@cloudflare/workers-types';
 export interface ContactRecord {
   id: number;
   Name: string;
-  Surname: string;
-  RawPhoneNumber: string;
-  ServiceInterest: string;
+  Phone: string;
+  Department: string;
   Message: string;
+  RawEmail: string;
+  CreatedAt: string;
 }
 
 export interface ContactFormData {
   name: string;
   phone: string;
-  serviceInterest?: string;
+  department?: string;
   message: string;
+  rawEmail: string;
 }
 
 export const contactQueries = {
   create: (db: D1Database, data: ContactFormData) => {
-    // Split full name into Name and Surname
-    const nameParts = data.name.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-
     return db.prepare(`
-      INSERT INTO \`contact-form\` (Name, Surname, RawPhoneNumber, ServiceInterest, Message)
+      INSERT INTO ContactForm (Name, Phone, Department, Message, RawEmail)
       VALUES (?, ?, ?, ?, ?)
-      RETURNING id, Name, Surname, RawPhoneNumber, ServiceInterest, Message
+      RETURNING id, Name, Phone, Department, Message, RawEmail, CreatedAt
     `).bind(
-      firstName,
-      lastName,
+      data.name,
       data.phone,
-      data.serviceInterest || '',
-      data.message
+      data.department || '',
+      data.message,
+      data.rawEmail
     ).first<ContactRecord>();
   }
 };
