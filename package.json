@@ -4,8 +4,9 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run build:wasm && astro build",
-    "build:wasm": "cd src/applications_leptos/main-app && ./build.sh",
+    "build": "npm run build:admin && astro build",
+    "build:leptos-spa":"cd src/applications_leptos/main-app && ./build.sh",
+    "build:admin": "cd src/applications_leptos/admin_app && ./build.sh",
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "npm run build && wrangler pages deploy dist",

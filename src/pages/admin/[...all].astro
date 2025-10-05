@@ -8,13 +8,13 @@ import 'src/styles/global.css'
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WASM SPA - Leptos</title>
+  <title>Admin Panel - Leptos</title>
 
   <meta name="theme-color" content="#18181b">
   <meta name="color-scheme" content="dark light">
 
   <script is:inline>
-    // Prevent flash of wrong theme -Sync with Astro app theme
+    // Prevent flash of wrong theme - Sync with Astro app theme
     const isDarkMode = localStorage.getItem('darkMode') === 'true' ||
       (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
@@ -27,28 +27,28 @@ import 'src/styles/global.css'
   <div id="wasm-root" class="w-full h-full"></div>
 
   <script type="module">
-    import init, { mount_app } from '/wasm/pkg/wasm_app.js';
+    import init, { mount_admin_app } from '/wasm/admin_app/admin_wasm_app.js';
 
-    async function loadWasmApp() {
+    async function loadAdminApp() {
       try {
         // Initialize the WASM module
-        await init('/wasm/pkg/wasm_app_bg.wasm');
+        await init('/wasm/admin_app/admin_wasm_app_bg.wasm');
 
-        // Mount the Leptos app to #wasm-root
-        mount_app();
+        // Mount the Admin Leptos app to #wasm-root
+        mount_admin_app();
 
-        console.log('✅ WASM app loaded successfully!');
+        console.log('✅ Admin WASM app loaded successfully!');
       } catch (err) {
-        console.error('❌ Failed to load WASM app:', err);
+        console.error('❌ Failed to load Admin WASM app:', err);
 
         // Show error to user
         const root = document.getElementById('wasm-root');
         if (root) {
           root.innerHTML = `
             <div class="p-8 text-center">
-              <h1 class="text-3xl font-bold text-red-400 mb-4">Failed to Load WASM App</h1>
-              <p class="text-zinc-400 mb-4">Please ensure the WASM module is built:</p>
-              <code class="bg-zinc-800 px-4 py-2 rounded">npm run build:wasm</code>
+              <h1 class="text-3xl font-bold text-red-400 mb-4">Failed to Load Admin App</h1>
+              <p class="text-zinc-400 mb-4">Please ensure the Admin WASM module is built:</p>
+              <code class="bg-zinc-800 px-4 py-2 rounded">cd src/applications_leptos/admin_app && ./build.sh</code>
               <p class="text-zinc-500 mt-4 text-sm">${err.message}</p>
             </div>
           `;
@@ -56,7 +56,7 @@ import 'src/styles/global.css'
       }
     }
 
-    loadWasmApp();
+    loadAdminApp();
   </script>
 </body>
 </html>
