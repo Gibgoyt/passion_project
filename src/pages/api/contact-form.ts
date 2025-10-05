@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         phone: body.phone?.trim(),
         department: body.service?.trim(),
         message: body.message?.trim(),
-        rawEmail: "placeholder@example.com" // Hardcoded as form doesn't provide it
+        rawEmail: body.email?.trim()
       };
     } catch (error) {
       return new Response(
@@ -50,11 +50,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Validate required fields
-    if (!formData.name || !formData.phone || !formData.message) {
+    if (!formData.name || !formData.rawEmail || !formData.phone || !formData.message) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Missing required fields: name, phone, and message are required'
+          error: 'Missing required fields: name, email, phone, and message are required'
         }),
         {
           status: 400,
@@ -71,6 +71,38 @@ export const POST: APIRoute = async ({ request, locals }) => {
         JSON.stringify({
           success: false,
           error: 'Name must be 100 characters or less'
+        }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    }
+
+    if (formData.rawEmail.length > 255) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Email must be 255 characters or less'
+        }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.rawEmail)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Please provide a valid email address'
         }),
         {
           status: 400,

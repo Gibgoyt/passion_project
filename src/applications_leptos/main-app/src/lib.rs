@@ -69,10 +69,10 @@ fn Home() -> impl IntoView {
                 "This is a Leptos-powered WebAssembly single-page application running in Astro!"
             </p>
             <div class="flex gap-4">
-                <A href="/wasm/dashboard" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition">
+                <A href="/leptos-spa/dashboard" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition">
                     "Go to Dashboard"
                 </A>
-                <A href="/wasm/counter" class="px-6 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg font-semibold transition">
+                <A href="/leptos-spa/counter" class="px-6 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg font-semibold transition">
                     "Try Counter"
                 </A>
             </div>
@@ -87,9 +87,9 @@ fn Navigation() -> impl IntoView {
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold">"WASM SPA"</h1>
                 <div class="flex gap-6">
-                    <A href="/wasm" class="hover:text-blue-400 transition">"Home"</A>
-                    <A href="/wasm/dashboard" class="hover:text-blue-400 transition">"Dashboard"</A>
-                    <A href="/wasm/counter" class="hover:text-blue-400 transition">"Counter"</A>
+                    <A href="/leptos-spa" class="hover:text-blue-400 transition">"Home"</A>
+                    <A href="/leptos-spa/dashboard" class="hover:text-blue-400 transition">"Dashboard"</A>
+                    <A href="/leptos-spa/counter" class="hover:text-blue-400 transition">"Counter"</A>
                 </div>
             </div>
         </nav>
@@ -103,9 +103,9 @@ fn App() -> impl IntoView {
             <div class="min-h-screen bg-zinc-900 text-zinc-100">
                 <Navigation />
                 <Routes>
-                    <Route path="/wasm" view=Home/>
-                    <Route path="/wasm/dashboard" view=Dashboard/>
-                    <Route path="/wasm/counter" view=Counter/>
+                    <Route path="/leptos-spa" view=Home/>
+                    <Route path="/leptos-spa/dashboard" view=Dashboard/>
+                    <Route path="/leptos-spa/counter" view=Counter/>
                 </Routes>
             </div>
         </Router>

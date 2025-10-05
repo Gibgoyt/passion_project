@@ -1,13 +1,13 @@
 ---
 import Layout from 'src/layouts/Layout.astro';
+import HeroSection from 'src/components/HeroSection.astro';
 ---
 
 <Layout title="About Us - Pritchard Specialised Solutions">
 	<main>
 		<!-- Page Header -->
-		<section class="relative overflow-hidden py-16 lg:py-24">
-			<div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 -z-10"></div>
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<HeroSection>
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
 				<nav class="mb-8" aria-label="Breadcrumb">
 					<div class="flex items-center space-x-2 text-sm">
 						<a href="/" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
@@ -35,7 +35,7 @@ import Layout from 'src/layouts/Layout.astro';
 					</div>
 				</div>
 			</div>
-		</section>
+		</HeroSection>
 
 		<!-- Our Story Section -->
 		<section class="py-16 lg:py-24">

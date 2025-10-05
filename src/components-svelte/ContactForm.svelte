@@ -2,6 +2,7 @@
 	// Form state
 	let formData = {
 		name: '',
+		email: '',
 		phone: '',
 		company: '',
 		service: '',
@@ -32,6 +33,13 @@
 				if (!value.trim()) return 'Full name is required';
 				if (value.length > 100) return 'Name must be 100 characters or less';
 				break;
+			case 'email':
+				if (!value.trim()) return 'Email address is required';
+				if (value.length > 255) return 'Email must be 255 characters or less';
+				// Basic email format validation
+				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+				if (!emailRegex.test(value.trim())) return 'Please enter a valid email address';
+				break;
 			case 'phone':
 				if (!value.trim()) return 'Phone number is required';
 				if (value.length > 20) return 'Phone number must be 20 characters or less';
@@ -48,6 +56,7 @@
 		const newErrors = {};
 
 		newErrors.name = validateField('name', formData.name);
+		newErrors.email = validateField('email', formData.email);
 		newErrors.phone = validateField('phone', formData.phone);
 		newErrors.message = validateField('message', formData.message);
 
@@ -101,6 +110,7 @@
 				// Reset form
 				formData = {
 					name: '',
+					email: '',
 					phone: '',
 					company: '',
 					service: '',
@@ -151,6 +161,26 @@
 			/>
 			{#if errors.name}
 				<p class="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
+			{/if}
+		</div>
+
+		<!-- Email Address -->
+		<div>
+			<label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+				Email Address *
+			</label>
+			<input
+				type="email"
+				id="email"
+				bind:value={formData.email}
+				on:input={(e) => handleInput('email', e.target.value)}
+				placeholder="your@email.com"
+				class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors
+				{errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'}"
+				disabled={isSubmitting}
+			/>
+			{#if errors.email}
+				<p class="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
 			{/if}
 		</div>
 
