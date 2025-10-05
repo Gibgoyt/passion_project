@@ -7,7 +7,7 @@ mod components;
 mod pages;
 
 use components::{Sidebar, Header, DarkMode};
-use pages::{Dashboard, Database, Crm, Cicd, Settings};
+use pages::{Dashboard, Database, DatabaseTable, Crm, Cicd, Settings};
 
 fn initialize_dark_mode() -> bool {
     if let Some(window) = web_sys::window() {
@@ -65,6 +65,7 @@ fn App() -> impl IntoView {
                                 <Route path="/admin" view=Dashboard/>
                                 <Route path="/admin/dashboard" view=Dashboard/>
                                 <Route path="/admin/database" view=Database/>
+                                <Route path="/admin/database/:table" view=DatabaseTable/>
                                 <Route path="/admin/crm" view=Crm/>
                                 <Route path="/admin/ci-cd" view=Cicd/>
                                 <Route path="/admin/settings" view=Settings/>

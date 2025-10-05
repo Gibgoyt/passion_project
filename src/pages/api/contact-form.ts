@@ -1,6 +1,57 @@
 import type { APIRoute } from 'astro';
 import { contactQueries, type ContactFormData } from 'src/lib/db/contact-queries';
 
+export const GET: APIRoute = async ({ locals }) => {
+  try {
+    // Access D1 binding through CloudFlare runtime
+    const runtime = locals.runtime;
+    const db = runtime?.env?.DB;
+
+    if (!db) {
+      return new Response(
+        JSON.stringify({
+          error: 'Database not configured',
+          message: 'D1 binding not found. Please configure D1 binding in CloudFlare Pages dashboard.',
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+    }
+
+    const result = await contactQueries.getAll(db);
+
+    return new Response(
+      JSON.stringify(result.results),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+  } catch (error) {
+    console.error('Error fetching contact form submissions:', error);
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Failed to fetch contact form submissions',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      },
+    );
+  }
+};
+
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Get D1 database instance

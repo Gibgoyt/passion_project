@@ -19,6 +19,9 @@ export interface ContactFormData {
 }
 
 export const contactQueries = {
+  getAll: (db: D1Database) =>
+    db.prepare('SELECT * FROM ContactForm ORDER BY CreatedAt DESC').all<ContactRecord>(),
+
   create: (db: D1Database, data: ContactFormData) => {
     return db.prepare(`
       INSERT INTO ContactForm (Name, Phone, Department, Message, RawEmail)

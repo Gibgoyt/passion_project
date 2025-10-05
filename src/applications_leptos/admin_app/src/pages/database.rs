@@ -35,7 +35,27 @@ pub fn Database() -> impl IntoView {
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-700">
-                            // Row 1: users
+                            // Row 1: contact-form
+                            <tr class="hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">"contact-form"</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">"-"</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">"-"</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">"-"</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <a href="/admin/database/contact-form" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition">"View"</a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            // Row 2: users
                             <tr class="hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
@@ -50,13 +70,12 @@ pub fn Database() -> impl IntoView {
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">"2 hours ago"</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition">"View"</button>
-                                        <button class="px-3 py-1 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 text-gray-700 dark:text-gray-300 rounded font-medium transition">"Edit"</button>
+                                        <button class="px-3 py-1 bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-400 rounded font-medium cursor-not-allowed" disabled>"View"</button>
                                     </div>
                                 </td>
                             </tr>
 
-                            // Row 2: orders
+                            // Row 3: orders
                             <tr class="hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
@@ -71,13 +90,12 @@ pub fn Database() -> impl IntoView {
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">"1 hour ago"</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition">"View"</button>
-                                        <button class="px-3 py-1 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 text-gray-700 dark:text-gray-300 rounded font-medium transition">"Edit"</button>
+                                        <button class="px-3 py-1 bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-400 rounded font-medium cursor-not-allowed" disabled>"View"</button>
                                     </div>
                                 </td>
                             </tr>
 
-                            // Row 3: products
+                            // Row 4: products
                             <tr class="hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
@@ -92,8 +110,7 @@ pub fn Database() -> impl IntoView {
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">"30 minutes ago"</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition">"View"</button>
-                                        <button class="px-3 py-1 bg-gray-200 dark:bg-zinc-700 hover:bg-gray-300 dark:hover:bg-zinc-600 text-gray-700 dark:text-gray-300 rounded font-medium transition">"Edit"</button>
+                                        <button class="px-3 py-1 bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-400 rounded font-medium cursor-not-allowed" disabled>"View"</button>
                                     </div>
                                 </td>
                             </tr>
