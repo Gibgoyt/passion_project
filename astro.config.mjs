@@ -6,6 +6,8 @@ import svelte from '@astrojs/svelte'
 import qwikdev from '@qwikdev/astro'
 import mdx from '@astrojs/mdx'
 import tailwindcss from "@tailwindcss/vite"
+import wasm from "vite-plugin-wasm"
+import topLevelAwait from "vite-plugin-top-level-await"
 
 // https://astro.build/config
 export default defineConfig({
@@ -44,6 +46,8 @@ export default defineConfig({
       // THIS **IS** 100% the correct way of adding TailwindCSS to an Astro project
       // @ts-ignore
       tailwindcss(),
+      wasm(),
+      topLevelAwait(),
     ],
     resolve: {
       conditions: [

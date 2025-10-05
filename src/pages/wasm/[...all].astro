@@ -1,0 +1,52 @@
+---
+export const prerender = false;
+import 'src/styles/global.css'
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-zinc-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WASM SPA - Leptos</title>
+
+  <meta name="theme-color" content="#18181b">
+  <meta name="color-scheme" content="dark">
+</head>
+<body class="h-full bg-zinc-900 text-zinc-100">
+  <div id="wasm-root" class="w-full h-full"></div>
+
+  <script type="module">
+    import init, { mount_app } from '/wasm/pkg/wasm_app.js';
+
+    async function loadWasmApp() {
+      try {
+        // Initialize the WASM module
+        await init('/wasm/pkg/wasm_app_bg.wasm');
+
+        // Mount the Leptos app to #wasm-root
+        mount_app();
+
+        console.log('✅ WASM app loaded successfully!');
+      } catch (err) {
+        console.error('❌ Failed to load WASM app:', err);
+
+        // Show error to user
+        const root = document.getElementById('wasm-root');
+        if (root) {
+          root.innerHTML = `
+            <div class="p-8 text-center">
+              <h1 class="text-3xl font-bold text-red-400 mb-4">Failed to Load WASM App</h1>
+              <p class="text-zinc-400 mb-4">Please ensure the WASM module is built:</p>
+              <code class="bg-zinc-800 px-4 py-2 rounded">npm run build:wasm</code>
+              <p class="text-zinc-500 mt-4 text-sm">${err.message}</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    loadWasmApp();
+  </script>
+</body>
+</html>
