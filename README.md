@@ -43,7 +43,7 @@ npx wrangler deploy
 /
 ├── public/
 ├── src/
-│   ├── components-solid/
+│   ├── components_solid/
 │   │   ├── Counter.tsx      # SolidJS demo component
 │   │   └── DarkModeToggle.tsx # Dark mode toggle
 │   ├── layouts/
@@ -76,11 +76,11 @@ Access these in your API routes through `locals.runtime.env`.
 
 ## Adding SolidJS Components
 
-Create `.tsx` files in the `components-solid` directory and use them in your Astro pages with the `client:*` directive:
+Create `.tsx` files in the `components_solid` directory and use them in your Astro pages with the `client:*` directive:
 
 ```astro
 ---
-import MyComponent from 'src/components-solid/MyComponent';
+import MyComponent from 'src/components_solid/MyComponent';
 ---
 
 <MyComponent client:load />

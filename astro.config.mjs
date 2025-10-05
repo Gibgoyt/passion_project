@@ -20,17 +20,17 @@ export default defineConfig({
     mdx(),
     qwikdev({
       include: [
-        '**/components-qwik/*',
-        '**/applications-qwik/**/*'
+        '**/components_qwik/*',
+        '**/applications_qwik/**/*'
       ]
     }),
     solidJs({
       devtools: true,
-      // all SolidJS components will be put inside 'components-solid' folder if ever other TSX frameworks are ever
+      // all SolidJS components will be put inside 'components_solid' folder if ever other TSX frameworks are ever
       // added to this astro project
       include: [
-        '**/components-solid/*',
-        '**/applications-solid/**/*'
+        '**/components_solid/*',
+        '**/applications_solid/**/*'
       ]
     }),
     svelte()

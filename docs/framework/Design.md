@@ -197,8 +197,8 @@ You've built a sophisticated Astro application with SolidJS, Qwik, Svelte, and S
 #### File Organization
 ```
 src/
-├── components-qwik/     # Server islands + light client islands
-├── components-solid/    # SPAs + complex client state
+├── components_qwik/     # Server islands + light client islands
+├── components_solid/    # SPAs + complex client state
 ├── components-svelte/   # Simple client islands
 ├── pages/
 │   ├── index.astro     # Static marketing

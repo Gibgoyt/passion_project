@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "npm run build:wasm && astro build",
-    "build:wasm": "cd src/applications-wasm/main-app && ./build.sh",
+    "build:wasm": "cd src/applications_leptos/main-app && ./build.sh",
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "npm run build && wrangler pages deploy dist",
