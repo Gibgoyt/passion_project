@@ -27,28 +27,28 @@ import 'src/styles/global.css'
   <div id="wasm-root" class="w-full h-full"></div>
 
   <script type="module">
-    import init, { mount_app } from '/wasm/pkg/wasm_app.js';
+    import init, { mount_app } from '/wasm/leptos/main_app/wasm_app.js';
 
     async function loadWasmApp() {
       try {
         // Initialize the WASM module
-        await init('/wasm/pkg/wasm_app_bg.wasm');
+        await init('/wasm/leptos/main_app/wasm_app_bg.wasm');
 
         // Mount the Leptos app to #wasm-root
         mount_app();
 
-        console.log('✅ WASM app loaded successfully!');
+        console.log('✅ Leptos WASM app loaded successfully!');
       } catch (err) {
-        console.error('❌ Failed to load WASM app:', err);
+        console.error('❌ Failed to load Leptos WASM app:', err);
 
         // Show error to user
         const root = document.getElementById('wasm-root');
         if (root) {
           root.innerHTML = `
             <div class="p-8 text-center">
-              <h1 class="text-3xl font-bold text-red-400 mb-4">Failed to Load WASM App</h1>
+              <h1 class="text-3xl font-bold text-red-400 mb-4">Failed to Load Leptos WASM App</h1>
               <p class="text-zinc-400 mb-4">Please ensure the WASM module is built:</p>
-              <code class="bg-zinc-800 px-4 py-2 rounded">npm run build:wasm</code>
+              <code class="bg-zinc-800 px-4 py-2 rounded">cd src/applications_leptos/main_app && ./build.sh</code>
               <p class="text-zinc-500 mt-4 text-sm">${err.message}</p>
             </div>
           `;

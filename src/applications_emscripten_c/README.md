@@ -57,5 +57,5 @@ To add a new Emscripten C app:
 ## 📝 Available Apps
 
 - **app** - Simple dashboard with interactive counter
-  - Route: `/emscripten-c-api`
+  - Route: `/emscripten-c-spa`
   - Output: `public/wasm/emscripten_c/`

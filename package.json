@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "npm run build:admin && astro build",
-    "build:leptos-spa":"cd src/applications_leptos/main-app && ./build.sh",
+    "build:leptos-spa":"cd src/applications_leptos/main_app && ./build.sh",
     "build:admin": "cd src/applications_leptos/admin_app && ./build.sh",
     "preview": "astro preview",
     "astro": "astro",

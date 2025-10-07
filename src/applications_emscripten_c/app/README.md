@@ -64,7 +64,7 @@ git push
 
 ## 🌐 Access
 
-Visit: `http://localhost:4321/emscripten-c-api`
+Visit: `http://localhost:4321/emscripten-c-spa`
 
 ## 🔧 Development
 

@@ -58,7 +58,7 @@ To add a new Emscripten C++ app:
 ## 📝 Available Apps
 
 - **app** - Simple dashboard with interactive counter
-  - Route: `/emscripten-cpp-api`
+  - Route: `/emscripten-cpp-spa`
   - Output: `public/wasm/emscripten_cpp/`
   - Language: C++17
   - Features: STL, iostream, namespaces

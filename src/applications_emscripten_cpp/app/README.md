@@ -65,7 +65,7 @@ git push
 
 ## 🌐 Access
 
-Visit: `http://localhost:4321/emscripten-cpp-api`
+Visit: `http://localhost:4321/emscripten-cpp-spa`
 
 ## 🔧 Development
 
