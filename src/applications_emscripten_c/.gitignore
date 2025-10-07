@@ -1,0 +1,29 @@
+# Emscripten C Build Artifacts
+# Ignore intermediate build files, keep final WASM outputs
+
+# Object files
+*.o
+*.bc
+*.out
+
+# Emscripten cache
+.emscripten_cache/
+
+# Build artifacts (not WASM)
+*.a
+*.so
+*.dylib
+
+# Debug files
+*.dSYM/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

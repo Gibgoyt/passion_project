@@ -1,0 +1,116 @@
+---
+export const prerender = false;
+import 'src/styles/global.css'
+
+// Get the route from URL params
+const routeSegment = Astro.params.all || ''
+console.log('🔧 [EMSCRIPTEN-C] Processing route:', Astro.url.pathname, 'Segment:', routeSegment)
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emscripten C Dashboard</title>
+
+  <meta name="theme-color" content="#18181b">
+  <meta name="color-scheme" content="dark light">
+
+  <script is:inline>
+    // Prevent flash of wrong theme - Sync with Astro app theme
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' ||
+      (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="h-full">
+  <div id="wasm-root" class="w-full h-full"></div>
+
+  <script is:inline>
+    async function loadEmscriptenApp() {
+      try {
+        console.log('🔧 Initializing Emscripten C WASM module...');
+
+        // Dynamically load the Emscripten script
+        const script = document.createElement('script');
+        script.src = '/wasm/emscripten_c/app.js';
+
+        await new Promise((resolve, reject) => {
+          script.onload = resolve;
+          script.onerror = () => reject(new Error('Failed to load Emscripten script'));
+          document.head.appendChild(script);
+        });
+
+        console.log('✅ Emscripten script loaded');
+
+        // createEmscriptenModule is now available globally
+        const Module = await createEmscriptenModule({
+          locateFile: (path) => {
+            if (path.endsWith('.wasm')) {
+              return '/wasm/emscripten_c/app.wasm';
+            }
+            return path;
+          },
+          print: (text) => {
+            console.log('[C stdout]', text);
+          },
+          printErr: (text) => {
+            console.error('[C stderr]', text);
+          },
+          onRuntimeInitialized: () => {
+            console.log('✅ Emscripten runtime initialized');
+          }
+        });
+
+        // Expose Module globally for onclick handlers
+        window.Module = Module;
+
+        // Call main() to initialize the dashboard
+        // (INVOKE_RUN=0 means it doesn't run automatically)
+        Module._main();
+
+        console.log('✅ Emscripten C WASM app loaded successfully!');
+      } catch (err) {
+        console.error('❌ Failed to load Emscripten C WASM app:', err);
+
+        // Show error to user
+        const root = document.getElementById('wasm-root');
+        if (root) {
+          root.innerHTML = `
+            <div class="min-h-screen bg-gray-50 dark:bg-zinc-900 p-8">
+              <div class="max-w-2xl mx-auto">
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+                  <h1 class="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
+                    Failed to Load Emscripten C App
+                  </h1>
+                  <p class="text-gray-700 dark:text-gray-300 mb-4">
+                    Please ensure the Emscripten C WASM module is built:
+                  </p>
+                  <div class="bg-zinc-800 rounded p-4 mb-4">
+                    <code class="text-green-400 text-sm">
+                      cd src/applications_emscripten_c/app<br>
+                      ./build.sh
+                    </code>
+                  </div>
+                  <details class="text-sm">
+                    <summary class="cursor-pointer text-red-600 dark:text-red-400 font-medium mb-2">
+                      Error Details
+                    </summary>
+                    <pre class="bg-zinc-800 text-red-400 p-4 rounded overflow-auto">${err.stack || err.message}</pre>
+                  </details>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    loadEmscriptenApp();
+  </script>
+</body>
+</html>
