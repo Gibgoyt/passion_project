@@ -14,7 +14,7 @@ OUTPUT_WASM = $(OUTPUT_DIR)/app.wasm
 # Compiler flags
 CFLAGS = -O3 \
 	-s WASM=1 \
-	-s EXPORTED_FUNCTIONS='["_main","_init_dashboard","_increment_counter","_decrement_counter","_reset_counter"]' \
+	-s EXPORTED_FUNCTIONS='["_main","_increment_counter","_decrement_counter","_reset_counter","_handle_route_change","_navigate_to"]' \
 	-s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' \
 	-s MODULARIZE=1 \
 	-s EXPORT_NAME='createEmscriptenModule' \
