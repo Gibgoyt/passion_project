@@ -19,4 +19,8 @@ fi
 # Output to public/wasm/admin_app/ so Astro can serve the files
 wasm-pack build --target web --out-dir ../../../public/wasm/admin_app --release
 
+# Remove auto-generated .gitignore (we want to commit these files)
+rm -f ../../../public/wasm/admin_app/.gitignore
+
 echo "✅ Admin WASM build complete! Output in public/wasm/admin_app/"
+echo "📝 Removed auto-generated .gitignore (files are now tracked by git)"

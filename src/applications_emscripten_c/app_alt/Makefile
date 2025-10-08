@@ -7,7 +7,7 @@ EMCC = emcc
 SOURCES = main.c
 
 # Output files
-OUTPUT_DIR = ../../../public/wasm/emscripten_c/app
+OUTPUT_DIR = ../../../public/wasm/emscripten_c/app_alt
 OUTPUT_JS = $(OUTPUT_DIR)/app.js
 OUTPUT_WASM = $(OUTPUT_DIR)/app.wasm
 

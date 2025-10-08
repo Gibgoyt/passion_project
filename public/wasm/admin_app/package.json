@@ -1,0 +1,15 @@
+{
+  "name": "admin-wasm-app",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "admin_wasm_app_bg.wasm",
+    "admin_wasm_app.js",
+    "admin_wasm_app.d.ts"
+  ],
+  "main": "admin_wasm_app.js",
+  "types": "admin_wasm_app.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
