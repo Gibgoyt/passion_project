@@ -10,3 +10,5 @@ dist
 
 src/applications-wasm/main-app/target/
 public/wasm/pkg/
+debug_txts/
+.astro/

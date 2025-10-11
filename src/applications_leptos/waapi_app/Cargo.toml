@@ -1,0 +1,43 @@
+[package]
+name = "waapi-wasm-app"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+leptos = { version = "0.6", features = ["csr"] }
+leptos_router = { version = "0.6", features = ["csr"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+console_error_panic_hook = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+serde_json = "1.0"
+byteorder = "1.5"
+gloo-net = "0.5"
+js-sys = "0.3"
+urlencoding = "2.1"
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+    "Window",
+    "Document",
+    "Element",
+    "HtmlElement",
+    "Storage",
+    "MediaQueryList",
+    "DomTokenList",
+    "Response",
+    "Request",
+    "RequestInit",
+    "RequestMode",
+    "Headers",
+]
+
+[profile.release]
+opt-level = 'z'
+lto = true
+codegen-units = 1

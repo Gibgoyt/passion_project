@@ -1,0 +1,87 @@
+---
+export const prerender = false;
+import 'src/styles/global.css'
+
+// ==== ROUTE VALIDATION LOGIC ====
+// Define valid waapi routes
+type ValidWaapiRoute = '' | 'dashboard' | 'accounts'
+
+// Get the route from URL params
+const routeSegment = Astro.params.all || ''
+console.log('🔒 [WAAPI] Processing waapi route:', Astro.url.pathname, 'Segment:', routeSegment)
+
+// Validate route against known routes (including dynamic :jid routes)
+const validRoutes: ValidWaapiRoute[] = ['', 'dashboard', 'accounts']
+const isAccountDetailRoute = /^accounts\/[^/]+$/.test(routeSegment)
+
+// Check if the route is valid
+if (routeSegment && !validRoutes.includes(routeSegment as ValidWaapiRoute) && !isAccountDetailRoute) {
+  console.log('❌ [WAAPI] Invalid route, redirecting to dashboard (/waapi/dashboard):', routeSegment)
+  return Astro.redirect('/waapi/dashboard', 302)
+}
+
+console.log('✅ [WAAPI] Valid route accessed:', routeSegment || 'home')
+// ==== END ROUTE VALIDATION LOGIC ====
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WaAPI Manager - Leptos</title>
+
+  <meta name="theme-color" content="#18181b">
+  <meta name="color-scheme" content="dark light">
+
+  <script is:inline>
+    // Prevent flash of wrong theme - Sync with Astro app theme
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' ||
+      (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="h-full">
+  <div
+    id="wasm-root"
+    class="w-full h-full"
+    data-api-origin={Astro.url.origin}
+  ></div>
+
+  <script type="module">
+    import init, { mount_waapi_app } from '/wasm/waapi_app/waapi_wasm_app.js';
+
+    async function loadWaapiApp() {
+      try {
+        // Initialize the WASM module
+        await init('/wasm/waapi_app/waapi_wasm_app_bg.wasm');
+
+        // Mount the WaAPI Leptos app to #wasm-root
+        mount_waapi_app();
+
+        console.log('✅ WaAPI WASM app loaded successfully!');
+      } catch (err) {
+        console.error('❌ Failed to load WaAPI WASM app:', err);
+
+        // Show error to user
+        const root = document.getElementById('wasm-root');
+        if (root) {
+          root.innerHTML = `
+            <div class="p-8 text-center">
+              <h1 class="text-3xl font-bold text-red-400 mb-4">Failed to Load WaAPI App</h1>
+              <p class="text-zinc-400 mb-4">Please ensure the WaAPI WASM module is built:</p>
+              <code class="bg-zinc-800 px-4 py-2 rounded">cd src/applications_leptos/waapi_app && ./build.sh</code>
+              <p class="text-zinc-500 mt-4 text-sm">${err.message}</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    loadWaapiApp();
+  </script>
+</body>
+</html>
