@@ -4,12 +4,14 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct WhatsAppAccount {
     pub jid: String,
-    pub phone_number: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phone_number: Option<String>,
     pub device_name: String,
     pub platform: String,
     pub connected: bool,
     pub authenticated: bool,
     pub created_at: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub last_seen: Option<String>,
 }
 

@@ -3,9 +3,8 @@ use gloo_net::http::Request;
 
 /// Get the backend API base URL from window or default to empty string (same origin)
 fn get_backend_url() -> String {
-    // For now, we'll use a hardcoded backend URL
-    // In production, this should come from env vars or window.location
-    "http://localhost:8080".to_string()
+    // Backend URL for production
+    "https://backend.pritchard-solutions.com:2053".to_string()
 }
 
 /// List all WhatsApp accounts

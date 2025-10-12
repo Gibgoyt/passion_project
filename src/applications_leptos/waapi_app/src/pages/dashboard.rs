@@ -136,6 +136,13 @@ fn DashboardContent(store: WaapiStore) -> impl IntoView {
                                     ("bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400", "Disconnected")
                                 };
 
+                                let display_initials = if let Some(ref p) = phone {
+                                    p.chars().take(2).collect::<String>()
+                                } else {
+                                    device.chars().take(2).collect::<String>()
+                                };
+                                let display_phone = phone.clone().unwrap_or_else(|| device.clone());
+
                                 view! {
                                     <A
                                         href=format!("/waapi/accounts/{}", urlencoding::encode(&jid))
@@ -144,10 +151,10 @@ fn DashboardContent(store: WaapiStore) -> impl IntoView {
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
-                                                    {phone.chars().take(2).collect::<String>()}
+                                                    {display_initials}
                                                 </div>
                                                 <div>
-                                                    <p class="font-medium text-gray-900 dark:text-white">{phone.clone()}</p>
+                                                    <p class="font-medium text-gray-900 dark:text-white">{display_phone}</p>
                                                     <p class="text-sm text-gray-500 dark:text-gray-400">{device}</p>
                                                 </div>
                                             </div>
