@@ -42,8 +42,12 @@ pub fn AccountDetail() -> impl IntoView {
                     spawn_local(async move {
                         match waapi_client::get_qr_code(decoded_jid.clone()).await {
                             Ok(response) => {
-                                qr_code.set(Some(response.qr_code));
-                                logging::log!("✅ QR code loaded");
+                                if let Some(qr) = response.qr_code {
+                                    qr_code.set(Some(qr));
+                                    logging::log!("✅ QR code loaded");
+                                } else {
+                                    logging::warn!("⚠️ No QR code available - account may already be authenticated");
+                                }
                             }
                             Err(err) => {
                                 logging::error!("❌ Failed to load QR code: {}", err);
@@ -67,8 +71,16 @@ pub fn AccountDetail() -> impl IntoView {
             spawn_local(async move {
                 match waapi_client::get_qr_code(jid).await {
                     Ok(response) => {
-                        qr_code.set(Some(response.qr_code));
-                        logging::log!("✅ QR code refreshed");
+                        if let Some(qr) = response.qr_code {
+                            qr_code.set(Some(qr));
+                            logging::log!("✅ QR code refreshed");
+                        } else if response.authenticated {
+                            logging::log!("✅ Account is already authenticated");
+                            error.set(Some(response.message));
+                        } else {
+                            logging::error!("❌ No QR code available");
+                            error.set(Some("QR code not available".to_string()));
+                        }
                     }
                     Err(err) => {
                         logging::error!("❌ Failed to refresh QR code: {}", err);

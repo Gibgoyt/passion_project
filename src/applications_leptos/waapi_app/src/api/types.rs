@@ -76,9 +76,12 @@ pub struct CreateAccountResponse {
 pub struct QRCodeResponse {
     pub success: bool,
     pub message: String,
-    pub qr_code: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub qr_code: Option<String>,
     pub authenticated: bool,
     pub jid: String,
+    pub status: String,
+    pub can_regenerate: bool,
 }
 
 // Send Message Request

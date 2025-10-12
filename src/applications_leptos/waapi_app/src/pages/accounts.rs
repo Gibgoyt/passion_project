@@ -87,8 +87,21 @@ pub fn Accounts() -> impl IntoView {
             spawn_local(async move {
                 match waapi_client::get_qr_code(jid.clone()).await {
                     Ok(response) => {
-                        qr_code_data.set(Some(response.qr_code));
-                        logging::log!("✅ QR code retrieved for {}", jid);
+                        if response.authenticated {
+                            // Account already authenticated, show message and close modal
+                            logging::log!("✅ Account {} is already authenticated", jid);
+                            error_signal.set(Some(response.message));
+                            show_qr_modal.set(false);
+                        } else if let Some(qr) = response.qr_code {
+                            // Show QR code
+                            qr_code_data.set(Some(qr));
+                            logging::log!("✅ QR code retrieved for {}", jid);
+                        } else {
+                            // No QR code available
+                            logging::error!("❌ No QR code available for {}", jid);
+                            error_signal.set(Some("QR code not available".to_string()));
+                            show_qr_modal.set(false);
+                        }
                     }
                     Err(err) => {
                         logging::error!("❌ Failed to get QR code: {}", err);
@@ -223,9 +236,12 @@ pub fn Accounts() -> impl IntoView {
                                                     view! {
                                                         <button
                                                             on:click=move |_| authenticate_account(jid_for_auth.clone())
-                                                            class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-900/40 transition-colors"
+                                                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors border-2 border-blue-500 dark:border-blue-600 shadow-sm"
                                                         >
-                                                            "Authenticate"
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                            </svg>
+                                                            "Authenticate Now"
                                                         </button>
                                                     }.into_view()
                                                 }}
