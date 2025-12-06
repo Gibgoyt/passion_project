@@ -1,0 +1,13 @@
+---
+import Layout from '../components/Layout.astro'
+import LoginForm from '../components/LoginForm.svelte'
+
+// No server-side logic - pure frontend!
+---
+
+<Layout title="Login" description="Secure OAuth 2.1 PKCE login for authenticated access">
+  <div class="min-h-screen flex items-center justify-center py-12">
+    <!-- Use Svelte component with client-side interactivity -->
+    <LoginForm client:load />
+  </div>
+</Layout>

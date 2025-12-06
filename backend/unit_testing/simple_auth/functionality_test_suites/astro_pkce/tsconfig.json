@@ -1,0 +1,22 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@endpoints/*": ["../ts_testing/endpoints/*"],
+      "@ts-testing/*": ["../ts_testing/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@components/*": ["./src/components/*"],
+      "@/*": ["./src/*"]
+    },
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": [
+    "src/**/*",
+    "../ts_testing/**/*"
+  ]
+}

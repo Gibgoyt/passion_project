@@ -1,0 +1,13 @@
+---
+import Layout from '../components/Layout.astro'
+import Dashboard from '../components/Dashboard.svelte'
+
+// No server-side logic - client-side auth check in Svelte!
+---
+
+<Layout title="Dashboard" description="Protected dashboard for authenticated users">
+  <div class="py-12">
+    <!-- Use Svelte component with client-side auth check -->
+    <Dashboard client:load />
+  </div>
+</Layout>

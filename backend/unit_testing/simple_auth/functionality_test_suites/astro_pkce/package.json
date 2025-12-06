@@ -1,0 +1,23 @@
+{
+  "name": "astro-pkce-auth",
+  "version": "1.0.0",
+  "description": "OAuth 2.1 PKCE authentication application using Astro v5 and Tailwind v4",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --port 3000",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node dist/server/entry.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.0.0",
+    "@astrojs/svelte": "^7.2.2",
+    "@tailwindcss/vite": "^4.0.0",
+    "astro": "^5.2.0",
+    "svelte": "^5.44.1",
+    "tailwindcss": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

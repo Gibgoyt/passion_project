@@ -1,0 +1,145 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title: string
+  description?: string
+}
+
+const { title, description = 'OAuth 2.1 PKCE authentication with Astro v5 and Tailwind v4' } = Astro.props
+const { user, isAuthenticated } = Astro.locals
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} - OAuth PKCE Auth</title>
+
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+
+  <body class="h-full bg-oauth-gradient text-gray-900 antialiased">
+    <!-- Header -->
+    <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a href="/" class="flex items-center space-x-2">
+              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600">
+                <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+              </div>
+              <span class="text-xl font-bold text-white">OAuth PKCE</span>
+            </a>
+          </div>
+
+          <!-- Navigation -->
+          <nav class="flex items-center space-x-4">
+            {isAuthenticated && user ? (
+              <>
+                <!-- Authenticated user menu -->
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm text-white/80">
+                    Welcome, <span class="font-semibold">{user.email}</span>
+                  </span>
+                  <a
+                    href="/app"
+                    class="text-white hover:text-brand-200 transition-colors duration-150"
+                  >
+                    Dashboard
+                  </a>
+                  <form action="/logout" method="post" class="inline">
+                    <button
+                      type="submit"
+                      class="text-white hover:text-red-300 transition-colors duration-150 underline"
+                    >
+                      Logout
+                    </button>
+                  </form>
+                </div>
+              </>
+            ) : (
+              <>
+                <!-- Public navigation -->
+                <a
+                  href="/"
+                  class="text-white hover:text-brand-200 transition-colors duration-150"
+                >
+                  Home
+                </a>
+                <a
+                  href="/login"
+                  class="btn-oauth-secondary !text-brand-600 !bg-white !border-white hover:!bg-gray-50"
+                >
+                  Login
+                </a>
+              </>
+            )}
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/5 backdrop-blur-md border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
+          <div class="text-center text-sm text-white/60 sm:text-left">
+            <p>OAuth 2.1 PKCE Demo with Astro v5 & Tailwind v4</p>
+          </div>
+
+          <div class="flex items-center space-x-6 text-sm text-white/60">
+            <div class="flex items-center space-x-2">
+              <div class="h-2 w-2 rounded-full bg-emerald-400"></div>
+              <span>Server Online</span>
+            </div>
+            <span>•</span>
+            <span>Client ID: astro-pkce-test</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Background decoration -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+      <svg
+        class="absolute left-1/2 top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-white/5 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+        aria-hidden="true"
+      >
+        <defs>
+          <pattern
+            id="e813992c-7d03-4cc4-a2bd-151760b470a0"
+            width="200"
+            height="200"
+            x="50%"
+            y="-1"
+            patternUnits="userSpaceOnUse"
+          >
+            <path d="M100 200V.5M.5 .5H200" fill="none" />
+          </pattern>
+        </defs>
+        <svg x="50%" y="-1" class="overflow-visible fill-white/2.5">
+          <path
+            d="m-100 0 200 0V.5M.5 .5H200"
+            stroke-width="0"
+            fill="url(#e813992c-7d03-4cc4-a2bd-151760b470a0)"
+          />
+        </svg>
+      </svg>
+    </div>
+  </body>
+</html>

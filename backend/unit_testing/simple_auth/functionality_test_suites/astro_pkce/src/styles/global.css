@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom brand colors */
+  --color-brand-50: oklch(0.97 0.013 260);
+  --color-brand-100: oklch(0.93 0.027 260);
+  --color-brand-200: oklch(0.86 0.054 260);
+  --color-brand-300: oklch(0.77 0.081 260);
+  --color-brand-400: oklch(0.68 0.108 260);
+  --color-brand-500: oklch(0.59 0.135 260);
+  --color-brand-600: oklch(0.5 0.162 260);
+  --color-brand-700: oklch(0.41 0.135 260);
+  --color-brand-800: oklch(0.32 0.108 260);
+  --color-brand-900: oklch(0.23 0.081 260);
+  --color-brand-950: oklch(0.15 0.054 260);
+
+  /* OAuth themed gradient colors */
+  --color-oauth-start: oklch(0.72 0.12 260);
+  --color-oauth-end: oklch(0.58 0.15 285);
+
+  /* Custom spacing */
+  --spacing-safe: max(1rem, env(safe-area-inset-left));
+
+  /* Typography */
+  --font-display: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", "Source Code Pro", monospace;
+
+  /* Custom shadows for auth flow */
+  --shadow-oauth-sm: 0 2px 4px -1px oklch(0.23 0.081 260 / 0.1);
+  --shadow-oauth-md: 0 4px 6px -1px oklch(0.23 0.081 260 / 0.1), 0 2px 4px -2px oklch(0.23 0.081 260 / 0.1);
+  --shadow-oauth-lg: 0 10px 15px -3px oklch(0.23 0.081 260 / 0.1), 0 4px 6px -4px oklch(0.23 0.081 260 / 0.1);
+
+  /* Animation durations */
+  --duration-75: 75ms;
+  --duration-150: 150ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+}
+
+/* Global styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-display);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom component classes using @utility */
+@utility btn-oauth {
+  @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white;
+  @apply bg-gradient-to-r from-brand-500 to-brand-600;
+  @apply border border-transparent rounded-xl;
+  @apply shadow-oauth-md hover:shadow-oauth-lg;
+  @apply transform transition-all duration-300;
+  @apply hover:scale-105 hover:from-brand-600 hover:to-brand-700;
+  @apply focus:outline-hidden focus:ring-4 focus:ring-brand-500/20;
+  @apply active:scale-95;
+  @apply disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none;
+}
+
+@utility btn-oauth-secondary {
+  @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold;
+  @apply text-brand-600 bg-brand-50 border border-brand-200;
+  @apply rounded-xl shadow-oauth-sm hover:shadow-oauth-md;
+  @apply transform transition-all duration-300;
+  @apply hover:scale-105 hover:bg-brand-100 hover:border-brand-300;
+  @apply focus:outline-hidden focus:ring-4 focus:ring-brand-500/20;
+  @apply active:scale-95;
+}
+
+@utility card-oauth {
+  @apply bg-white rounded-2xl border border-gray-200;
+  @apply shadow-oauth-lg backdrop-blur-sm;
+  @apply p-8 transition-all duration-300;
+}
+
+@utility input-oauth {
+  @apply w-full px-4 py-3 text-base;
+  @apply bg-white border border-gray-300 rounded-xl;
+  @apply shadow-oauth-sm focus:shadow-oauth-md;
+  @apply transition-all duration-150;
+  @apply focus:outline-hidden focus:ring-4 focus:ring-brand-500/20 focus:border-brand-500;
+  @apply placeholder:text-gray-400;
+}
+
+@utility step-indicator {
+  @apply flex items-center px-4 py-3 rounded-xl;
+  @apply text-sm font-medium transition-all duration-300;
+  @apply border-l-4;
+}
+
+@utility step-pending {
+  @apply step-indicator bg-gray-50 text-gray-600 border-gray-300;
+}
+
+@utility step-active {
+  @apply step-indicator bg-brand-50 text-brand-700 border-brand-500;
+}
+
+@utility step-completed {
+  @apply step-indicator bg-emerald-50 text-emerald-700 border-emerald-500;
+}
+
+/* Loading spinner */
+@keyframes oauth-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@utility spinner-oauth {
+  @apply inline-block w-5 h-5 border-2 border-current border-r-transparent rounded-full;
+  animation: oauth-spin 1s linear infinite;
+}
+
+/* Gradient backgrounds */
+@utility bg-oauth-gradient {
+  background: linear-gradient(135deg, var(--color-oauth-start) 0%, var(--color-oauth-end) 100%);
+}
+
+@utility bg-oauth-gradient-subtle {
+  background: linear-gradient(135deg,
+    oklch(0.72 0.12 260 / 0.05) 0%,
+    oklch(0.58 0.15 285 / 0.05) 100%);
+}
+
+/* Messages */
+@utility message-success {
+  @apply px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800;
+}
+
+@utility message-error {
+  @apply px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800;
+}
+
+@utility message-info {
+  @apply px-4 py-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-800;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .card-oauth {
+    @apply p-6 rounded-xl;
+  }
+
+  .btn-oauth, .btn-oauth-secondary {
+    @apply px-4 py-2.5 text-sm;
+  }
+}

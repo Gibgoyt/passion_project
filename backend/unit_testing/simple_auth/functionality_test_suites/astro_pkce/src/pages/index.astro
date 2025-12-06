@@ -1,0 +1,260 @@
+---
+import Layout from '../components/Layout.astro'
+
+const { user, isAuthenticated } = Astro.locals
+---
+
+<Layout title="Home" description="Secure OAuth 2.1 PKCE authentication demo with modern web technologies">
+  <div class="relative isolate">
+    <!-- Hero section -->
+    <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center">
+        {isAuthenticated && user ? (
+          <!-- Authenticated user welcome -->
+          <div class="card-oauth mx-auto max-w-lg">
+            <div class="text-center">
+              <!-- Success icon -->
+              <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <svg class="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+
+              <h1 class="mt-6 text-3xl font-bold text-gray-900">
+                Welcome back!
+              </h1>
+
+              <p class="mt-4 text-lg text-gray-600">
+                You're successfully authenticated using OAuth 2.1 with PKCE as <strong class="text-brand-600">{user.email}</strong>
+              </p>
+
+              <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+                <a href="/app" class="btn-oauth">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                  </svg>
+                  Go to Dashboard
+                </a>
+
+                <form action="/logout" method="post" class="inline">
+                  <button type="submit" class="btn-oauth-secondary">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                    </svg>
+                    Logout
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <!-- Public homepage -->
+          <div>
+            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+              Secure OAuth 2.1
+              <span class="text-brand-300">PKCE Authentication</span>
+            </h1>
+
+            <p class="mt-6 text-lg leading-8 text-white/90">
+              Experience modern, secure authentication using OAuth 2.1 with PKCE (Proof Key for Code Exchange).
+              Built with Astro v5 and styled with Tailwind CSS v4.
+            </p>
+
+            <div class="mt-10 flex items-center justify-center gap-x-6">
+              <a href="/login" class="btn-oauth">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25-2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                Start Authentication
+              </a>
+
+              <a
+                href="#learn-more"
+                class="text-sm font-semibold leading-6 text-white hover:text-brand-200 transition-colors duration-150"
+              >
+                Learn more <span aria-hidden="true">→</span>
+              </a>
+            </div>
+
+            <!-- Test credentials note -->
+            <div class="mt-8 inline-flex items-center rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm">
+              <svg class="mr-2 h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+              </svg>
+              <strong>Test credentials:</strong>&nbsp;
+              testuser1@example.com / Testuser1!
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Features section -->
+    <div id="learn-more" class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Why OAuth 2.1 with PKCE?
+        </h2>
+        <p class="mt-6 text-lg leading-8 text-white/80">
+          Modern security practices for web applications with enhanced protection against common vulnerabilities.
+        </p>
+      </div>
+
+      <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+        <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+          <!-- Feature 1 -->
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-white">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3.75 6.75H21a3 3 0 003-3V6a3 3 0 00-3-3H5.25A2.25 2.25 0 003 5.25v13.5A2.25 2.25 0 005.25 21h10.5a2.25 2.25 0 002.25-2.25V15" />
+                </svg>
+              </div>
+              PKCE Security
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-white/70">
+              Protects against authorization code interception attacks using dynamically generated code verifiers and challenges.
+            </dd>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-white">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+              </div>
+              Modern OAuth 2.1
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-white/70">
+              Latest OAuth specification with enhanced security practices, removing deprecated grant types and flows.
+            </dd>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-white">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
+                </svg>
+              </div>
+              Server-Side Security
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-white/70">
+              Secure token storage using HTTP-only cookies with automatic refresh and middleware-based route protection.
+            </dd>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="relative pl-16">
+            <dt class="text-base font-semibold leading-7 text-white">
+              <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495" />
+                </svg>
+              </div>
+              Modern Tech Stack
+            </dt>
+            <dd class="mt-2 text-base leading-7 text-white/70">
+              Built with Astro v5 for optimal performance and Tailwind CSS v4 for beautiful, maintainable styling.
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Authentication Flow section -->
+    <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div class="card-oauth mx-auto max-w-4xl">
+        <div class="text-center">
+          <h2 class="text-3xl font-bold tracking-tight text-gray-900">
+            How It Works
+          </h2>
+          <p class="mt-4 text-lg text-gray-600">
+            The complete OAuth 2.1 PKCE authentication flow in 5 secure steps
+          </p>
+        </div>
+
+        <div class="mt-12 space-y-6">
+          <!-- Step 1 -->
+          <div class="step-completed">
+            <div class="flex items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-semibold">
+                1
+              </div>
+              <div class="ml-4">
+                <h3 class="text-base font-semibold">Generate PKCE Parameters</h3>
+                <p class="text-sm text-gray-600">Create code verifier, challenge, and state parameters</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-completed">
+            <div class="flex items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-semibold">
+                2
+              </div>
+              <div class="ml-4">
+                <h3 class="text-base font-semibold">Initialize OAuth Flow</h3>
+                <p class="text-sm text-gray-600">Request authorization with PKCE challenge</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-completed">
+            <div class="flex items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-semibold">
+                3
+              </div>
+              <div class="ml-4">
+                <h3 class="text-base font-semibold">User Authentication</h3>
+                <p class="text-sm text-gray-600">Secure login with email and password</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="step-completed">
+            <div class="flex items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-semibold">
+                4
+              </div>
+              <div class="ml-4">
+                <h3 class="text-base font-semibold">Code Exchange</h3>
+                <p class="text-sm text-gray-600">Exchange authorization code for access tokens</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="step-completed">
+            <div class="flex items-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-semibold">
+                5
+              </div>
+              <div class="ml-4">
+                <h3 class="text-base font-semibold">Token Validation</h3>
+                <p class="text-sm text-gray-600">Verify access token and retrieve user information</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {!isAuthenticated && (
+          <div class="mt-10 text-center">
+            <a href="/login" class="btn-oauth">
+              Try the Authentication Flow
+              <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,26 @@
+{
+	"endpoints": {
+		"auth": {
+			"login": {
+				"POST": [
+					"configurations...."
+				]
+			},
+			"validate": {
+				"GET": []
+			},
+			"refresh": {
+				"POST": []
+			}
+		}
+	},
+	"auth": {
+		"accessToken": {
+			"valid": 10.00
+		},
+		"refreshToken": {
+			"rotation": true,
+			"valid": 100.00
+		}
+	}
+}

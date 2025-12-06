@@ -21,7 +21,7 @@
     "@builder.io/qwik": "^1.14.1",
     "@qwikdev/astro": "^0.8.0",
     "@tailwindcss/vite": "^4.1.8",
-    "astro": "^5.9.1",
+    "astro": "^5.16.4",
     "htmx.org": "^1.9.12",
     "solid-js": "^1.9.7",
     "svelte": "^5.33.18",

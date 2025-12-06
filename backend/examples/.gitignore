@@ -1,0 +1,4 @@
+server
+*.crt
+*.key
+http_server

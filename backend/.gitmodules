@@ -1,0 +1,6 @@
+[submodule "uSockets"]
+	path = uSockets
+	url = https://github.com/uNetworking/uSockets
+[submodule "libmdbx"]
+	path = libmdbx
+	url = https://github.com/erthink/libmdbx
