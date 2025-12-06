@@ -3,25 +3,26 @@
 
 # Compiler configuration
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -std=c99 -march=native -flto -DBORINGSSL_PREFIX=USOCKETS_BSSL
+CFLAGS = -Wall -Wextra -O2 -std=c99 -march=native -flto
 
-# uSockets paths
-USOCKETS_INCLUDE = ../../uSockets/src
-USOCKETS_LIB = ../../uSockets/uSockets.a
+# uSockets paths (corrected to actual location)
+USOCKETS_INCLUDE = /Users/ahmed/dev/uWebSockets/uSockets/src
+USOCKETS_LIB = /Users/ahmed/dev/uWebSockets/uSockets/uSockets.a
 
-# BoringSSL paths (for SSL support)
-BORINGSSL_DIR = ../../uSockets/boringssl_safe
+# OpenSSL paths (using Homebrew OpenSSL)
+OPENSSL_INCLUDE = /opt/homebrew/include
+OPENSSL_LIB_DIR = /opt/homebrew/lib
 
 # Include directories
 INCLUDES = -I$(USOCKETS_INCLUDE) \
-           -I$(BORINGSSL_DIR)/symbol_prefix_include \
-           -I$(BORINGSSL_DIR)/include
+           -I$(OPENSSL_INCLUDE)
 
-# Library linking (following examples/Makefile pattern)
+# Library linking (using system OpenSSL instead of BoringSSL)
+# Note: liburing and -ldl are Linux-specific, not needed on macOS
+# -lstdc++ is needed because uSockets library contains C++ code
 LDFLAGS = $(USOCKETS_LIB) \
-          $(BORINGSSL_DIR)/build/ssl/libssl.a \
-          $(BORINGSSL_DIR)/build/crypto/libcrypto.a \
-          -luring -lpthread -ldl -lstdc++ -lz -lm
+          -L$(OPENSSL_LIB_DIR) -lssl -lcrypto \
+          -lpthread -lstdc++ -lz -lm
 
 # Build targets
 TARGETS = server client
@@ -84,7 +85,9 @@ help:
 check-deps:
 	@echo "Checking dependencies..."
 	@test -f $(USOCKETS_LIB) || (echo "ERROR: uSockets library not found at $(USOCKETS_LIB)" && exit 1)
-	@test -d $(BORINGSSL_DIR) || (echo "ERROR: BoringSSL directory not found at $(BORINGSSL_DIR)" && exit 1)
+	@test -d $(OPENSSL_INCLUDE) || (echo "ERROR: OpenSSL include directory not found at $(OPENSSL_INCLUDE)" && exit 1)
+	@test -f $(OPENSSL_LIB_DIR)/libssl.a || (echo "ERROR: OpenSSL libssl.a not found at $(OPENSSL_LIB_DIR)/libssl.a" && exit 1)
+	@test -f $(OPENSSL_LIB_DIR)/libcrypto.a || (echo "ERROR: OpenSSL libcrypto.a not found at $(OPENSSL_LIB_DIR)/libcrypto.a" && exit 1)
 	@test -f /etc/ssl/splitdo_api/cert.pem || (echo "WARNING: SSL certificate not found at /etc/ssl/splitdo_api/cert.pem" && exit 1)
 	@test -f /etc/ssl/splitdo_api/private/key.pem || (echo "WARNING: SSL private key not found at /etc/ssl/splitdo_api/private/key.pem" && exit 1)
 	@echo "✅ All dependencies found"

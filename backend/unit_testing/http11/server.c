@@ -120,10 +120,10 @@ int main() {
     /* Create the event loop */
     struct us_loop_t *loop = us_create_loop(0, on_wakeup, on_pre, on_post, 0);
 
-    /* Configure SSL options with production certificates */
+    /* Configure SSL options with local test certificates */
     struct us_socket_context_options_t options = {};
-    options.key_file_name = "/etc/ssl/splitdo_api/private/key.pem";
-    options.cert_file_name = "/etc/ssl/splitdo_api/cert.pem";
+    options.key_file_name = "../../../unit_testing/http11_server/certs/server.key";
+    options.cert_file_name = "../../../unit_testing/http11_server/certs/server.crt";
     options.passphrase = "";
 
     /* Create SSL socket context */
