@@ -6,7 +6,8 @@ CFLAGS = -Wall -Wextra -O2 -std=c99 -march=native -flto
 CFLAGS_DEBUG = -Wall -Wextra -g -std=c99
 INCLUDES = -I/Users/ahmed/dev/uWebSockets/uSockets/src \
            -I/opt/homebrew/include \
-           -Iauth_lib
+           -Iauth_lib \
+           -Imemory
 
 # OpenSSL and uSockets libraries
 LDFLAGS = /Users/ahmed/dev/uWebSockets/uSockets/uSockets.a \
@@ -23,9 +24,12 @@ AUTH_LIB_SRCS = auth_lib/base64url.c auth_lib/userid.c auth_lib/email.c \
                 auth_lib/jwks.c auth_lib/auth.c auth_lib/json_utils.c \
                 auth_lib/pkce.c auth_lib/oauth.c
 
-# Memory management sources for Oracle A1.Flex page allocation
-MEMORY_SRCS = memory/page_allocator.c memory/jwt_storage.c memory/memory_validation.c \
-              memory/a1_flex_optimizations.c
+# Platform-specific memory management sources
+# Automatically selects Mac M1 or Oracle A1.Flex implementation
+MEMORY_SRCS = memory/platform_detection.c \
+              memory/mac_m1_2022/page_allocator.c \
+              memory/mac_m1_2022/jwt_storage.c \
+              memory/mac_m1_2022/memory_validation.c
 
 AUTH_LIB_OBJS = $(AUTH_LIB_SRCS:.c=.o)
 MEMORY_OBJS = $(MEMORY_SRCS:.c=.o)
@@ -38,7 +42,7 @@ TEST_OBJS = $(TEST_SRCS:.c=.o)
 TEST_BINS = $(TEST_SRCS:.c=)
 
 # Main targets
-TARGETS = server client init_oauth_client $(TEST_BINS)
+TARGETS = server client init_oauth_client test_mac_memory $(TEST_BINS)
 DEBUG_TARGETS = server_debug
 
 .PHONY: all clean test check-deps run-server kill-server server_debug init-oauth-clients
@@ -89,6 +93,13 @@ init_oauth_client.o: init_oauth_client.c
 
 init_oauth_client: init_oauth_client.o $(AUTH_LIB_OBJS) $(MEMORY_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(MDBX_LDFLAGS)
+
+# Mac M1 Memory Test compilation
+test_mac_memory.o: test_mac_memory.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(MDBX_INCLUDES) -c $< -o $@
+
+test_mac_memory: test_mac_memory.o $(MEMORY_OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
 
 # Test compilation
 tests/%.o: tests/%.c

@@ -20,8 +20,7 @@
 #include "auth_lib/auth.h"
 #include "auth_lib/oauth.h"
 #include "auth_lib/json_utils.h"
-#include "memory/jwt_storage.h"
-#include "memory/memory_validation.h"
+#include "memory/platform_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,7 +47,7 @@ typedef struct {
     char body[MAX_REQUEST_SIZE];
     size_t body_length;
     char content_type[128];
-    jwt_storage_t* jwt_auth;  // Page-allocated JWT storage (replaces authorization[512])
+    crypto_buffer_t* jwt_auth;  // Platform-specific JWT storage (replaces authorization[512])
 } http_request_t;
 
 // Response structure for building HTTP responses
@@ -74,8 +73,8 @@ void init_http_request(http_request_t* request) {
 
     memset(request, 0, sizeof(http_request_t));
 
-    // Create JWT storage with default settings
-    request->jwt_auth = jwt_storage_create_default();
+    // Create platform-specific crypto buffer for JWT storage
+    request->jwt_auth = platform_crypto_buffer_alloc(2048); // Max JWT size
     if (!request->jwt_auth) {
         printf("⚠️ Failed to create JWT storage for HTTP request\n");
     }
@@ -88,7 +87,7 @@ void cleanup_http_request(http_request_t* request) {
     if (!request) return;
 
     if (request->jwt_auth) {
-        jwt_storage_destroy(request->jwt_auth);
+        platform_crypto_buffer_free(request->jwt_auth);
         request->jwt_auth = NULL;
     }
 }
@@ -1254,16 +1253,20 @@ int main(int argc, char *argv[]) {
 
     // Validate memory system at startup
     printf("🔍 Validating memory system...\n");
-    if (!validate_memory_system()) {
+    if (memory_system_validate() != 0) {
         printf("❌ Memory system validation failed\n");
         printf("   This system may not be compatible with the page allocator\n");
         return 1;
     }
-    printf("✅ Memory system validation passed\n");
+    printf("✅ Memory system validation passed\n\n");
 
-    // Print comprehensive memory validation report
-    print_validation_report();
-    printf("\n");
+    // Initialize platform-specific memory system
+    printf("🔧 Initializing memory system...\n");
+    if (memory_system_init() != 0) {
+        printf("❌ Failed to initialize memory system\n");
+        return 1;
+    }
+    printf("✅ Memory system initialized\n\n");
 
     // Set up signal handlers
     signal(SIGINT, signal_handler);
