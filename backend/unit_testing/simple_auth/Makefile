@@ -2,19 +2,20 @@
 # Follows established patterns from other unit tests
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -std=c99 -march=native -flto -DBORINGSSL_PREFIX=USOCKETS_BSSL
-CFLAGS_DEBUG = -Wall -Wextra -g -std=c99 -DBORINGSSL_PREFIX=USOCKETS_BSSL
-INCLUDES = -I../../uSockets/src -I../../uSockets/boringssl_safe/symbol_prefix_include -I../../uSockets/boringssl_safe/include -Iauth_lib
+CFLAGS = -Wall -Wextra -O2 -std=c99 -march=native -flto
+CFLAGS_DEBUG = -Wall -Wextra -g -std=c99
+INCLUDES = -I/Users/ahmed/dev/uWebSockets/uSockets/src \
+           -I/opt/homebrew/include \
+           -Iauth_lib
 
-# BoringSSL and uSockets libraries
-LDFLAGS = ../../uSockets/uSockets.a \
-          ../../uSockets/boringssl_safe/build/ssl/libssl.a \
-          ../../uSockets/boringssl_safe/build/crypto/libcrypto.a \
-          -lcjson -luring -lpthread -ldl -lstdc++ -lz -lm
+# OpenSSL and uSockets libraries
+LDFLAGS = /Users/ahmed/dev/uWebSockets/uSockets/uSockets.a \
+          -L/opt/homebrew/lib -lssl -lcrypto \
+          -lcjson -lpthread -lstdc++ -lz -lm
 
 # libmdbx library
-MDBX_INCLUDES = -I../../libmdbx/
-MDBX_LDFLAGS = -L../../libmdbx/build -lmdbx-static -Wl,-rpath,../../libmdbx/build
+MDBX_INCLUDES = -I/Users/ahmed/dev/libmdbx/build-local/include
+MDBX_LDFLAGS = /Users/ahmed/dev/libmdbx/build-local/lib/libmdbx.a
 
 # Auth library sources
 AUTH_LIB_SRCS = auth_lib/base64url.c auth_lib/userid.c auth_lib/email.c \
@@ -99,16 +100,16 @@ tests/%: tests/%.o $(AUTH_LIB_OBJS) $(MEMORY_OBJS)
 # Dependency checking
 check-deps:
 	@echo "🔍 Checking dependencies..."
-	@if [ ! -f "../../uSockets/uSockets.a" ]; then \
-		echo "❌ uSockets not built. Run: cd ../../uSockets && make"; \
+	@if [ ! -f "/Users/ahmed/dev/uWebSockets/uSockets/uSockets.a" ]; then \
+		echo "❌ uSockets not built. Run: cd /Users/ahmed/dev/uWebSockets/uSockets && make"; \
 		exit 1; \
 	fi
-	@if [ ! -f "../../uSockets/boringssl_safe/build/crypto/libcrypto.a" ]; then \
-		echo "❌ BoringSSL not built. Run: cd ../../uSockets && make"; \
+	@if [ ! -f "/opt/homebrew/lib/libssl.a" ]; then \
+		echo "❌ OpenSSL not found. Run: brew install openssl"; \
 		exit 1; \
 	fi
-	@if [ ! -f "../../libmdbx/build/libmdbx-static.a" ]; then \
-		echo "❌ libmdbx not built. Run: cd ../../libmdbx && make"; \
+	@if [ ! -f "/Users/ahmed/dev/libmdbx/build-local/lib/libmdbx.a" ]; then \
+		echo "❌ libmdbx not built. Check /Users/ahmed/dev/libmdbx/build-local/"; \
 		exit 1; \
 	fi
 	@echo "✅ All dependencies found"

@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-// BoringSSL includes with proper prefix
+// OpenSSL includes
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/evp.h>
@@ -29,12 +29,12 @@ void rsa_free_keypair(rsa_keypair_t *keypair) {
     if (!keypair) return;
 
     if (keypair->private_key) {
-        USOCKETS_BSSL_EVP_PKEY_free(keypair->private_key);
+        EVP_PKEY_free(keypair->private_key);
         keypair->private_key = NULL;
     }
 
     if (keypair->public_key) {
-        USOCKETS_BSSL_EVP_PKEY_free(keypair->public_key);
+        EVP_PKEY_free(keypair->public_key);
         keypair->public_key = NULL;
     }
 
@@ -65,28 +65,28 @@ int rsa_generate_keypair(rsa_keypair_t *keypair) {
     rsa_init_keypair(keypair);
 
     // Generate RSA key pair
-    EVP_PKEY_CTX *ctx = USOCKETS_BSSL_EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
     if (!ctx) {
         return -1;
     }
 
-    if (USOCKETS_BSSL_EVP_PKEY_keygen_init(ctx) <= 0) {
-        USOCKETS_BSSL_EVP_PKEY_CTX_free(ctx);
+    if (EVP_PKEY_keygen_init(ctx) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
         return -1;
     }
 
-    if (USOCKETS_BSSL_EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, RSA_KEY_BITS) <= 0) {
-        USOCKETS_BSSL_EVP_PKEY_CTX_free(ctx);
+    if (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, RSA_KEY_BITS) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
         return -1;
     }
 
     EVP_PKEY *pkey = NULL;
-    if (USOCKETS_BSSL_EVP_PKEY_keygen(ctx, &pkey) <= 0) {
-        USOCKETS_BSSL_EVP_PKEY_CTX_free(ctx);
+    if (EVP_PKEY_keygen(ctx, &pkey) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
         return -1;
     }
 
-    USOCKETS_BSSL_EVP_PKEY_CTX_free(ctx);
+    EVP_PKEY_CTX_free(ctx);
 
     // Set private key
     keypair->private_key = pkey;
@@ -131,7 +131,7 @@ int rsa_load_keys(rsa_keypair_t *keypair) {
     }
     printf("✅ Private key file opened successfully\n");
 
-    EVP_PKEY *private_key = USOCKETS_BSSL_PEM_read_PrivateKey(private_file, NULL, NULL, NULL);
+    EVP_PKEY *private_key = PEM_read_PrivateKey(private_file, NULL, NULL, NULL);
     fclose(private_file);
 
     if (!private_key) {
@@ -147,7 +147,7 @@ int rsa_load_keys(rsa_keypair_t *keypair) {
     FILE *public_file = fopen(PUBLIC_KEY_PATH, "r");
     if (public_file) {
         printf("✅ Public key file found, loading...\n");
-        EVP_PKEY *public_key = USOCKETS_BSSL_PEM_read_PUBKEY(public_file, NULL, NULL, NULL);
+        EVP_PKEY *public_key = PEM_read_PUBKEY(public_file, NULL, NULL, NULL);
         fclose(public_file);
 
         if (public_key) {
@@ -207,7 +207,7 @@ int rsa_save_keys(const rsa_keypair_t *keypair) {
         return -1;
     }
 
-    int private_result = USOCKETS_BSSL_PEM_write_PrivateKey(private_file, keypair->private_key,
+    int private_result = PEM_write_PrivateKey(private_file, keypair->private_key,
                                                            NULL, NULL, 0, NULL, NULL);
     fclose(private_file);
 
@@ -226,7 +226,7 @@ int rsa_save_keys(const rsa_keypair_t *keypair) {
         return -1;
     }
 
-    int public_result = USOCKETS_BSSL_PEM_write_PUBKEY(public_file, keypair->public_key);
+    int public_result = PEM_write_PUBKEY(public_file, keypair->public_key);
     fclose(public_file);
 
     if (public_result != 1) {
@@ -281,54 +281,54 @@ int rsa_validate_keypair(const rsa_keypair_t *keypair) {
     size_t sig_len = sizeof(signature);
 
     // Create signing context
-    EVP_MD_CTX *sign_ctx = USOCKETS_BSSL_EVP_MD_CTX_new();
+    EVP_MD_CTX *sign_ctx = EVP_MD_CTX_new();
     if (!sign_ctx) {
         return -1;
     }
 
     // Initialize signing
-    if (USOCKETS_BSSL_EVP_DigestSignInit(sign_ctx, NULL, USOCKETS_BSSL_EVP_sha256(),
+    if (EVP_DigestSignInit(sign_ctx, NULL, EVP_sha256(),
                                          NULL, keypair->private_key) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(sign_ctx);
+        EVP_MD_CTX_free(sign_ctx);
         return -1;
     }
 
     // Update with data
-    if (USOCKETS_BSSL_EVP_DigestSignUpdate(sign_ctx, test_data, strlen(test_data)) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(sign_ctx);
+    if (EVP_DigestSignUpdate(sign_ctx, test_data, strlen(test_data)) != 1) {
+        EVP_MD_CTX_free(sign_ctx);
         return -1;
     }
 
     // Finalize signature
-    if (USOCKETS_BSSL_EVP_DigestSignFinal(sign_ctx, signature, &sig_len) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(sign_ctx);
+    if (EVP_DigestSignFinal(sign_ctx, signature, &sig_len) != 1) {
+        EVP_MD_CTX_free(sign_ctx);
         return -1;
     }
 
-    USOCKETS_BSSL_EVP_MD_CTX_free(sign_ctx);
+    EVP_MD_CTX_free(sign_ctx);
 
     // Create verification context
-    EVP_MD_CTX *verify_ctx = USOCKETS_BSSL_EVP_MD_CTX_new();
+    EVP_MD_CTX *verify_ctx = EVP_MD_CTX_new();
     if (!verify_ctx) {
         return -1;
     }
 
     // Initialize verification
-    if (USOCKETS_BSSL_EVP_DigestVerifyInit(verify_ctx, NULL, USOCKETS_BSSL_EVP_sha256(),
+    if (EVP_DigestVerifyInit(verify_ctx, NULL, EVP_sha256(),
                                            NULL, keypair->public_key) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(verify_ctx);
+        EVP_MD_CTX_free(verify_ctx);
         return -1;
     }
 
     // Update with data
-    if (USOCKETS_BSSL_EVP_DigestVerifyUpdate(verify_ctx, test_data, strlen(test_data)) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(verify_ctx);
+    if (EVP_DigestVerifyUpdate(verify_ctx, test_data, strlen(test_data)) != 1) {
+        EVP_MD_CTX_free(verify_ctx);
         return -1;
     }
 
     // Verify signature
-    int verify_result = USOCKETS_BSSL_EVP_DigestVerifyFinal(verify_ctx, signature, sig_len);
-    USOCKETS_BSSL_EVP_MD_CTX_free(verify_ctx);
+    int verify_result = EVP_DigestVerifyFinal(verify_ctx, signature, sig_len);
+    EVP_MD_CTX_free(verify_ctx);
 
     return verify_result == 1 ? 1 : 0;
 }
@@ -339,62 +339,62 @@ int rsa_extract_public_key(EVP_PKEY *private_key, EVP_PKEY **public_key_out) {
     }
 
     // Create a new EVP_PKEY for the public key
-    EVP_PKEY *public_key = USOCKETS_BSSL_EVP_PKEY_new();
+    EVP_PKEY *public_key = EVP_PKEY_new();
     if (!public_key) {
         return -1;
     }
 
     // Get the RSA key from the private key
-    RSA *rsa_private = USOCKETS_BSSL_EVP_PKEY_get1_RSA(private_key);
+    RSA *rsa_private = EVP_PKEY_get1_RSA(private_key);
     if (!rsa_private) {
-        USOCKETS_BSSL_EVP_PKEY_free(public_key);
+        EVP_PKEY_free(public_key);
         return -1;
     }
 
     // Create a new RSA key with only public components
-    RSA *rsa_public = USOCKETS_BSSL_RSA_new();
+    RSA *rsa_public = RSA_new();
     if (!rsa_public) {
-        USOCKETS_BSSL_RSA_free(rsa_private);
-        USOCKETS_BSSL_EVP_PKEY_free(public_key);
+        RSA_free(rsa_private);
+        EVP_PKEY_free(public_key);
         return -1;
     }
 
     // Get the public components (n and e)
     const BIGNUM *n, *e;
-    USOCKETS_BSSL_RSA_get0_key(rsa_private, &n, &e, NULL);
+    RSA_get0_key(rsa_private, &n, &e, NULL);
 
     // Duplicate the public components
-    BIGNUM *n_dup = USOCKETS_BSSL_BN_dup(n);
-    BIGNUM *e_dup = USOCKETS_BSSL_BN_dup(e);
+    BIGNUM *n_dup = BN_dup(n);
+    BIGNUM *e_dup = BN_dup(e);
 
     if (!n_dup || !e_dup) {
-        if (n_dup) USOCKETS_BSSL_BN_free(n_dup);
-        if (e_dup) USOCKETS_BSSL_BN_free(e_dup);
-        USOCKETS_BSSL_RSA_free(rsa_public);
-        USOCKETS_BSSL_RSA_free(rsa_private);
-        USOCKETS_BSSL_EVP_PKEY_free(public_key);
+        if (n_dup) BN_free(n_dup);
+        if (e_dup) BN_free(e_dup);
+        RSA_free(rsa_public);
+        RSA_free(rsa_private);
+        EVP_PKEY_free(public_key);
         return -1;
     }
 
     // Set the public components
-    if (USOCKETS_BSSL_RSA_set0_key(rsa_public, n_dup, e_dup, NULL) != 1) {
-        USOCKETS_BSSL_BN_free(n_dup);
-        USOCKETS_BSSL_BN_free(e_dup);
-        USOCKETS_BSSL_RSA_free(rsa_public);
-        USOCKETS_BSSL_RSA_free(rsa_private);
-        USOCKETS_BSSL_EVP_PKEY_free(public_key);
+    if (RSA_set0_key(rsa_public, n_dup, e_dup, NULL) != 1) {
+        BN_free(n_dup);
+        BN_free(e_dup);
+        RSA_free(rsa_public);
+        RSA_free(rsa_private);
+        EVP_PKEY_free(public_key);
         return -1;
     }
 
     // Assign the RSA public key to the EVP_PKEY
-    if (USOCKETS_BSSL_EVP_PKEY_assign_RSA(public_key, rsa_public) != 1) {
-        USOCKETS_BSSL_RSA_free(rsa_public);
-        USOCKETS_BSSL_RSA_free(rsa_private);
-        USOCKETS_BSSL_EVP_PKEY_free(public_key);
+    if (EVP_PKEY_assign_RSA(public_key, rsa_public) != 1) {
+        RSA_free(rsa_public);
+        RSA_free(rsa_private);
+        EVP_PKEY_free(public_key);
         return -1;
     }
 
-    USOCKETS_BSSL_RSA_free(rsa_private);
+    RSA_free(rsa_private);
     *public_key_out = public_key;
     return 0;
 }
@@ -404,7 +404,7 @@ int rsa_get_key_bits(EVP_PKEY *key) {
         return -1;
     }
 
-    return USOCKETS_BSSL_EVP_PKEY_bits(key);
+    return EVP_PKEY_bits(key);
 }
 
 int rsa_generate_key_id(rsa_keypair_t *keypair) {
@@ -414,17 +414,17 @@ int rsa_generate_key_id(rsa_keypair_t *keypair) {
 
     // Export public key to DER format for hashing
     unsigned char *der_data = NULL;
-    int der_len = USOCKETS_BSSL_i2d_PUBKEY(keypair->public_key, &der_data);
+    int der_len = i2d_PUBKEY(keypair->public_key, &der_data);
     if (der_len <= 0 || !der_data) {
         return -1;
     }
 
     // Hash the DER data with SHA-256
     unsigned char hash[32];
-    USOCKETS_BSSL_SHA256(der_data, der_len, hash);
+    SHA256(der_data, der_len, hash);
 
     // Free the DER data
-    USOCKETS_BSSL_OPENSSL_free(der_data);
+    OPENSSL_free(der_data);
 
     // Take first 16 bytes of hash and encode as base64url
     char key_id_b64[32];
@@ -447,23 +447,23 @@ int rsa_export_public_key_pem(EVP_PKEY *public_key, char *pem_out, size_t pem_le
     }
 
     // Create memory BIO
-    BIO *bio = USOCKETS_BSSL_BIO_new(USOCKETS_BSSL_BIO_s_mem());
+    BIO *bio = BIO_new(BIO_s_mem());
     if (!bio) {
         return -1;
     }
 
     // Write public key to BIO
-    if (USOCKETS_BSSL_PEM_write_bio_PUBKEY(bio, public_key) != 1) {
-        USOCKETS_BSSL_BIO_free(bio);
+    if (PEM_write_bio_PUBKEY(bio, public_key) != 1) {
+        BIO_free(bio);
         return -1;
     }
 
     // Get data from BIO
     char *bio_data;
-    long bio_len = USOCKETS_BSSL_BIO_get_mem_data(bio, &bio_data);
+    long bio_len = BIO_get_mem_data(bio, &bio_data);
 
     if (bio_len <= 0 || (size_t)bio_len >= pem_len) {
-        USOCKETS_BSSL_BIO_free(bio);
+        BIO_free(bio);
         return -1;
     }
 
@@ -471,7 +471,7 @@ int rsa_export_public_key_pem(EVP_PKEY *public_key, char *pem_out, size_t pem_le
     memcpy(pem_out, bio_data, bio_len);
     pem_out[bio_len] = '\0';
 
-    USOCKETS_BSSL_BIO_free(bio);
+    BIO_free(bio);
     return (int)bio_len;
 }
 
@@ -483,51 +483,51 @@ int rsa_get_public_key_components(EVP_PKEY *public_key,
     }
 
     // Get RSA key
-    RSA *rsa = USOCKETS_BSSL_EVP_PKEY_get1_RSA(public_key);
+    RSA *rsa = EVP_PKEY_get1_RSA(public_key);
     if (!rsa) {
         return -1;
     }
 
     // Get public key components
     const BIGNUM *n, *e;
-    USOCKETS_BSSL_RSA_get0_key(rsa, &n, &e, NULL);
+    RSA_get0_key(rsa, &n, &e, NULL);
 
     // Convert modulus (n) to binary using secure buffer
-    int n_bytes = USOCKETS_BSSL_BN_num_bytes(n);
+    int n_bytes = BN_num_bytes(n);
     crypto_buffer_t *n_buffer = crypto_buffer_alloc(n_bytes);
     if (!n_buffer) {
-        USOCKETS_BSSL_RSA_free(rsa);
+        RSA_free(rsa);
         return -1;
     }
     unsigned char *n_bin = (unsigned char*)crypto_buffer_get_data(n_buffer);
 
-    USOCKETS_BSSL_BN_bn2bin(n, n_bin);
+    BN_bn2bin(n, n_bin);
 
     // Encode modulus to base64url
     int n_encoded = base64url_encode(n_bin, n_bytes, n_out, n_len);
     crypto_buffer_free(n_buffer);
 
     if (n_encoded <= 0) {
-        USOCKETS_BSSL_RSA_free(rsa);
+        RSA_free(rsa);
         return -1;
     }
 
     // Convert exponent (e) to binary using secure buffer
-    int e_bytes = USOCKETS_BSSL_BN_num_bytes(e);
+    int e_bytes = BN_num_bytes(e);
     crypto_buffer_t *e_buffer = crypto_buffer_alloc(e_bytes);
     if (!e_buffer) {
-        USOCKETS_BSSL_RSA_free(rsa);
+        RSA_free(rsa);
         return -1;
     }
     unsigned char *e_bin = (unsigned char*)crypto_buffer_get_data(e_buffer);
 
-    USOCKETS_BSSL_BN_bn2bin(e, e_bin);
+    BN_bn2bin(e, e_bin);
 
     // Encode exponent to base64url
     int e_encoded = base64url_encode(e_bin, e_bytes, e_out, e_len);
     crypto_buffer_free(e_buffer);
 
-    USOCKETS_BSSL_RSA_free(rsa);
+    RSA_free(rsa);
 
     if (e_encoded <= 0) {
         return -1;

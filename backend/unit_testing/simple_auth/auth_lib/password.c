@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <strings.h>  // For strcasecmp
 
-// BoringSSL includes with proper prefix
+// OpenSSL includes
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/crypto.h>
@@ -38,10 +38,10 @@ int hash_password(const char *password, char *hashed_out) {
 
     // Perform PBKDF2-SHA256
     unsigned char hash[PASSWORD_HASH_LENGTH];
-    if (USOCKETS_BSSL_PKCS5_PBKDF2_HMAC(password, strlen(password),
+    if (PKCS5_PBKDF2_HMAC(password, strlen(password),
                                         salt, PASSWORD_SALT_LENGTH,
                                         PASSWORD_ITERATIONS,
-                                        USOCKETS_BSSL_EVP_sha256(),
+                                        EVP_sha256(),
                                         PASSWORD_HASH_LENGTH, hash) != 1) {
         printf("🔍 REG DEBUG: Failed to compute PBKDF2 hash\n");
         return -1;
@@ -54,8 +54,8 @@ int hash_password(const char *password, char *hashed_out) {
     char hash_b64[PASSWORD_HASH_B64_LENGTH];
 
     // BoringSSL base64 encoding
-    int salt_len = USOCKETS_BSSL_EVP_EncodeBlock((unsigned char*)salt_b64, salt, PASSWORD_SALT_LENGTH);
-    int hash_len = USOCKETS_BSSL_EVP_EncodeBlock((unsigned char*)hash_b64, hash, PASSWORD_HASH_LENGTH);
+    int salt_len = EVP_EncodeBlock((unsigned char*)salt_b64, salt, PASSWORD_SALT_LENGTH);
+    int hash_len = EVP_EncodeBlock((unsigned char*)hash_b64, hash, PASSWORD_HASH_LENGTH);
 
     if (salt_len <= 0 || hash_len <= 0) {
         return -1;
@@ -104,10 +104,10 @@ int verify_password(const char *password, const char *hashed_password) {
     // Re-hash the provided password with same salt and iterations
     unsigned char computed_hash[PASSWORD_HASH_LENGTH];
     printf("🔍 PWD DEBUG: Computing hash with same salt and iterations\n");
-    if (USOCKETS_BSSL_PKCS5_PBKDF2_HMAC(password, strlen(password),
+    if (PKCS5_PBKDF2_HMAC(password, strlen(password),
                                         salt, PASSWORD_SALT_LENGTH,
                                         iterations,
-                                        USOCKETS_BSSL_EVP_sha256(),
+                                        EVP_sha256(),
                                         PASSWORD_HASH_LENGTH, computed_hash) != 1) {
         printf("🔍 PWD DEBUG: Failed to compute hash\n");
         return -1;
@@ -211,20 +211,18 @@ int parse_password_hash(const char *hashed_password,
             // Decode base64 salt
             unsigned char salt_decoded[PASSWORD_SALT_LENGTH + 4]; // Extra space for safety
             size_t actual_salt_len = 0;
-            int salt_result = USOCKETS_BSSL_EVP_DecodeBase64(salt_decoded, &actual_salt_len,
-                                                           sizeof(salt_decoded),
-                                                           (const unsigned char*)salt_b64, strlen(salt_b64));
+            int salt_result = EVP_DecodeBlock(salt_decoded, (const unsigned char*)salt_b64, strlen(salt_b64));
+            actual_salt_len = (salt_result >= 0) ? salt_result : 0;
             printf("🔍 PARSE DEBUG: Salt decode result: %d, length: %zu\n", salt_result, actual_salt_len);
 
             // Decode base64 hash
             unsigned char hash_decoded[PASSWORD_HASH_LENGTH + 4]; // Extra space for safety
             size_t actual_hash_len = 0;
-            int hash_result = USOCKETS_BSSL_EVP_DecodeBase64(hash_decoded, &actual_hash_len,
-                                                           sizeof(hash_decoded),
-                                                           (const unsigned char*)hash_b64, strlen(hash_b64));
+            int hash_result = EVP_DecodeBlock(hash_decoded, (const unsigned char*)hash_b64, strlen(hash_b64));
+            actual_hash_len = (hash_result >= 0) ? hash_result : 0;
             printf("🔍 PARSE DEBUG: Hash decode result: %d, length: %zu\n", hash_result, actual_hash_len);
 
-            if (salt_result == 1 && hash_result == 1 &&
+            if (salt_result >= 0 && hash_result >= 0 &&
                 actual_salt_len == PASSWORD_SALT_LENGTH && actual_hash_len == PASSWORD_HASH_LENGTH) {
                 printf("🔍 PARSE DEBUG: All validations passed, parsing successful\n");
                 memcpy(salt_out, salt_decoded, PASSWORD_SALT_LENGTH);
@@ -251,7 +249,7 @@ int generate_salt(unsigned char *salt_out) {
         return -1;
     }
 
-    if (USOCKETS_BSSL_RAND_bytes(salt_out, PASSWORD_SALT_LENGTH) != 1) {
+    if (RAND_bytes(salt_out, PASSWORD_SALT_LENGTH) != 1) {
         return -1;
     }
 
@@ -264,7 +262,7 @@ int constant_time_compare(const unsigned char *a, const unsigned char *b, size_t
     }
 
     // Use BoringSSL's constant time comparison
-    return USOCKETS_BSSL_CRYPTO_memcmp(a, b, len) == 0 ? 1 : 0;
+    return CRYPTO_memcmp(a, b, len) == 0 ? 1 : 0;
 }
 
 int get_hashing_time_ms(void) {
@@ -281,10 +279,10 @@ int get_hashing_time_ms(void) {
     time_t start = time(NULL);
 
     unsigned char hash[PASSWORD_HASH_LENGTH];
-    if (USOCKETS_BSSL_PKCS5_PBKDF2_HMAC(test_password, strlen(test_password),
+    if (PKCS5_PBKDF2_HMAC(test_password, strlen(test_password),
                                         test_salt, PASSWORD_SALT_LENGTH,
                                         PASSWORD_ITERATIONS,
-                                        USOCKETS_BSSL_EVP_sha256(),
+                                        EVP_sha256(),
                                         PASSWORD_HASH_LENGTH, hash) != 1) {
         return -1;
     }

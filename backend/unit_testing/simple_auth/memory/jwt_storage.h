@@ -273,7 +273,7 @@ typedef struct {
 } crypto_buffer_t;
 
 // Crypto buffer magic number for validation
-#define CRYPTO_BUFFER_MAGIC 0xC8ACED0CAFEBABE42ULL
+#define CRYPTO_BUFFER_MAGIC 0xCAFEBABE42ULL
 
 /**
  * Allocate secure buffer for cryptographic operations

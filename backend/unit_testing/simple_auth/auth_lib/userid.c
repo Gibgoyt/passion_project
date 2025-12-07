@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-// BoringSSL includes with proper prefix
+// OpenSSL includes
 #include <openssl/rand.h>
 
 /**
@@ -22,7 +22,7 @@ int generate_firebase_userid(char *userid_out) {
     // This encodes to exactly 28 base62 characters
     unsigned char random_bytes[21];
 
-    if (USOCKETS_BSSL_RAND_bytes(random_bytes, sizeof(random_bytes)) != 1) {
+    if (RAND_bytes(random_bytes, sizeof(random_bytes)) != 1) {
         return -1; // Random generation failed
     }
 

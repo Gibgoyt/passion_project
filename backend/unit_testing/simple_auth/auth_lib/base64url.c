@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-// BoringSSL includes with proper prefix
+// OpenSSL includes
 #include <openssl/evp.h>
 
 // Base64URL character set
@@ -36,7 +36,7 @@ size_t base64url_encode_len(size_t input_len) {
 
 size_t base64url_decode_len(size_t input_len) {
     // Calculate required buffer size with proper padding alignment
-    // This ensures adequate space for BoringSSL's EVP_DecodeBase64
+    // This ensures adequate space for OpenSSL's EVP_DecodeBase64
     return ((input_len + 3) / 4) * 3;
 }
 
@@ -51,9 +51,9 @@ int base64url_encode(const unsigned char *input, size_t input_len,
         return -1;
     }
 
-    // First encode using standard base64 with BoringSSL
+    // First encode using standard base64 with OpenSSL
     unsigned char temp_output[required_len];
-    int b64_len = USOCKETS_BSSL_EVP_EncodeBlock(temp_output, input, input_len);
+    int b64_len = EVP_EncodeBlock(temp_output, input, input_len);
     if (b64_len <= 0) {
         return -1;
     }
@@ -126,14 +126,12 @@ int base64url_decode(const char *input, size_t input_len,
     }
     standard_b64[padded_len] = '\0';
 
-    // Decode using BoringSSL
-    size_t actual_output_len = 0;
+    // Decode using OpenSSL
     size_t actual_string_len = strlen(standard_b64);
-    int result = USOCKETS_BSSL_EVP_DecodeBase64(output, &actual_output_len,
-                                               output_len, (unsigned char*)standard_b64, actual_string_len);
+    int result = EVP_DecodeBlock(output, (unsigned char*)standard_b64, actual_string_len);
 
-    if (result == 1) {
-        return (int)actual_output_len;
+    if (result >= 0) {
+        return result;
     } else {
         return -1;
     }

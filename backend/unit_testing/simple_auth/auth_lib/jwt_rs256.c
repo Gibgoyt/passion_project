@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-// BoringSSL includes with proper prefix
+// OpenSSL includes
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
@@ -26,7 +26,7 @@ int jwt_generate_id(char *jti_out) {
 
     // Generate random bytes for JWT ID
     unsigned char random_bytes[24]; // 192 bits
-    if (USOCKETS_BSSL_RAND_bytes(random_bytes, sizeof(random_bytes)) != 1) {
+    if (RAND_bytes(random_bytes, sizeof(random_bytes)) != 1) {
         return -1;
     }
 
@@ -273,47 +273,47 @@ int jwt_create_signature(const char *signing_input,
     }
 
     // Create signing context
-    EVP_MD_CTX *ctx = USOCKETS_BSSL_EVP_MD_CTX_new();
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     if (!ctx) {
         return -1;
     }
 
     // Initialize signing with SHA-256
-    if (USOCKETS_BSSL_EVP_DigestSignInit(ctx, NULL, USOCKETS_BSSL_EVP_sha256(),
+    if (EVP_DigestSignInit(ctx, NULL, EVP_sha256(),
                                          NULL, keypair->private_key) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
 
     // Update with signing input
-    if (USOCKETS_BSSL_EVP_DigestSignUpdate(ctx, signing_input, strlen(signing_input)) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+    if (EVP_DigestSignUpdate(ctx, signing_input, strlen(signing_input)) != 1) {
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
 
     // Get signature length
     size_t signature_len = 0;
-    if (USOCKETS_BSSL_EVP_DigestSignFinal(ctx, NULL, &signature_len) != 1) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+    if (EVP_DigestSignFinal(ctx, NULL, &signature_len) != 1) {
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
 
     // Allocate secure buffer for binary signature
     crypto_buffer_t *sig_buffer = crypto_buffer_alloc(signature_len);
     if (!sig_buffer) {
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
     unsigned char *signature = (unsigned char*)crypto_buffer_get_data(sig_buffer);
 
     // Create signature
-    if (USOCKETS_BSSL_EVP_DigestSignFinal(ctx, signature, &signature_len) != 1) {
+    if (EVP_DigestSignFinal(ctx, signature, &signature_len) != 1) {
         crypto_buffer_free(sig_buffer);
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
 
-    USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+    EVP_MD_CTX_free(ctx);
 
     // Encode signature to base64url
     int encoded_len = base64url_encode(signature, signature_len, signature_out, sig_len);
@@ -350,32 +350,32 @@ int jwt_verify_signature(const char *signing_input,
     }
 
     // Create verification context
-    EVP_MD_CTX *ctx = USOCKETS_BSSL_EVP_MD_CTX_new();
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     if (!ctx) {
         crypto_buffer_free(sig_buffer);
         return -1;
     }
 
     // Initialize verification
-    if (USOCKETS_BSSL_EVP_DigestVerifyInit(ctx, NULL, USOCKETS_BSSL_EVP_sha256(),
+    if (EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(),
                                            NULL, keypair->public_key) != 1) {
         crypto_buffer_free(sig_buffer);
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
 
     // Update with signing input
-    if (USOCKETS_BSSL_EVP_DigestVerifyUpdate(ctx, signing_input, strlen(signing_input)) != 1) {
+    if (EVP_DigestVerifyUpdate(ctx, signing_input, strlen(signing_input)) != 1) {
         crypto_buffer_free(sig_buffer);
-        USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+        EVP_MD_CTX_free(ctx);
         return -1;
     }
 
     // Verify signature
-    int verify_result = USOCKETS_BSSL_EVP_DigestVerifyFinal(ctx, sig_binary, decoded_len);
+    int verify_result = EVP_DigestVerifyFinal(ctx, sig_binary, decoded_len);
 
     crypto_buffer_free(sig_buffer);
-    USOCKETS_BSSL_EVP_MD_CTX_free(ctx);
+    EVP_MD_CTX_free(ctx);
 
     return verify_result == 1 ? 1 : 0;
 }
