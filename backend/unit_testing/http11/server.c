@@ -131,8 +131,8 @@ int main() {
                                                 sizeof(struct http_context), options);
 
     if (!http_context) {
-        printf("ERROR: Could not load SSL certificates from /etc/ssl/splitdo_api/\n");
-        printf("Please ensure cert.pem and private/key.pem exist and are readable\n");
+        printf("ERROR: Could not load SSL certificates from ../../../unit_testing/http11_server/certs/\n");
+        printf("Please ensure server.crt and server.key exist and are readable\n");
         exit(1);
     }
 
@@ -171,7 +171,7 @@ int main() {
 
     if (listen_socket) {
         printf("SSL HTTPS server listening on https://localhost:2053\n");
-        printf("Using SSL certificates from /etc/ssl/splitdo_api/\n");
+        printf("Using SSL certificates from ../../../unit_testing/http11_server/certs/\n");
         printf("Press Ctrl+C to stop the server\n");
 
         /* Run the event loop */

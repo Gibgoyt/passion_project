@@ -88,8 +88,8 @@ check-deps:
 	@test -d $(OPENSSL_INCLUDE) || (echo "ERROR: OpenSSL include directory not found at $(OPENSSL_INCLUDE)" && exit 1)
 	@test -f $(OPENSSL_LIB_DIR)/libssl.a || (echo "ERROR: OpenSSL libssl.a not found at $(OPENSSL_LIB_DIR)/libssl.a" && exit 1)
 	@test -f $(OPENSSL_LIB_DIR)/libcrypto.a || (echo "ERROR: OpenSSL libcrypto.a not found at $(OPENSSL_LIB_DIR)/libcrypto.a" && exit 1)
-	@test -f /etc/ssl/splitdo_api/cert.pem || (echo "WARNING: SSL certificate not found at /etc/ssl/splitdo_api/cert.pem" && exit 1)
-	@test -f /etc/ssl/splitdo_api/private/key.pem || (echo "WARNING: SSL private key not found at /etc/ssl/splitdo_api/private/key.pem" && exit 1)
+	@test -f ../../../unit_testing/http11_server/certs/server.crt || (echo "WARNING: SSL certificate not found at ../../../unit_testing/http11_server/certs/server.crt" && exit 1)
+	@test -f ../../../unit_testing/http11_server/certs/server.key || (echo "WARNING: SSL private key not found at ../../../unit_testing/http11_server/certs/server.key" && exit 1)
 	@echo "✅ All dependencies found"
 
 # Build with debug symbols
