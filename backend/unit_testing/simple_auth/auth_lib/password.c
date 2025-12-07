@@ -210,28 +210,38 @@ int parse_password_hash(const char *hashed_password,
 
             // Decode base64 salt
             unsigned char salt_decoded[PASSWORD_SALT_LENGTH + 4]; // Extra space for safety
-            size_t actual_salt_len = 0;
             int salt_result = EVP_DecodeBlock(salt_decoded, (const unsigned char*)salt_b64, strlen(salt_b64));
-            actual_salt_len = (salt_result >= 0) ? salt_result : 0;
-            printf("🔍 PARSE DEBUG: Salt decode result: %d, length: %zu\n", salt_result, actual_salt_len);
+
+            // Calculate actual decoded length accounting for base64 padding
+            size_t salt_b64_len = strlen(salt_b64);
+            size_t expected_salt_len = (salt_b64_len * 3) / 4;
+            if (salt_b64_len > 0 && salt_b64[salt_b64_len-1] == '=') expected_salt_len--;
+            if (salt_b64_len > 1 && salt_b64[salt_b64_len-2] == '=') expected_salt_len--;
+
+            printf("🔍 PARSE DEBUG: Salt decode result: %d, expected length: %zu\n", salt_result, expected_salt_len);
 
             // Decode base64 hash
             unsigned char hash_decoded[PASSWORD_HASH_LENGTH + 4]; // Extra space for safety
-            size_t actual_hash_len = 0;
             int hash_result = EVP_DecodeBlock(hash_decoded, (const unsigned char*)hash_b64, strlen(hash_b64));
-            actual_hash_len = (hash_result >= 0) ? hash_result : 0;
-            printf("🔍 PARSE DEBUG: Hash decode result: %d, length: %zu\n", hash_result, actual_hash_len);
+
+            // Calculate actual decoded length accounting for base64 padding
+            size_t hash_b64_len = strlen(hash_b64);
+            size_t expected_hash_len = (hash_b64_len * 3) / 4;
+            if (hash_b64_len > 0 && hash_b64[hash_b64_len-1] == '=') expected_hash_len--;
+            if (hash_b64_len > 1 && hash_b64[hash_b64_len-2] == '=') expected_hash_len--;
+
+            printf("🔍 PARSE DEBUG: Hash decode result: %d, expected length: %zu\n", hash_result, expected_hash_len);
 
             if (salt_result >= 0 && hash_result >= 0 &&
-                actual_salt_len == PASSWORD_SALT_LENGTH && actual_hash_len == PASSWORD_HASH_LENGTH) {
+                expected_salt_len == PASSWORD_SALT_LENGTH && expected_hash_len == PASSWORD_HASH_LENGTH) {
                 printf("🔍 PARSE DEBUG: All validations passed, parsing successful\n");
                 memcpy(salt_out, salt_decoded, PASSWORD_SALT_LENGTH);
                 memcpy(hash_out, hash_decoded, PASSWORD_HASH_LENGTH);
                 result = 0;
             } else {
                 printf("🔍 PARSE DEBUG: Final validation failed\n");
-                printf("🔍 PARSE DEBUG: Expected salt_len=%d, got=%zu\n", PASSWORD_SALT_LENGTH, actual_salt_len);
-                printf("🔍 PARSE DEBUG: Expected hash_len=%d, got=%zu\n", PASSWORD_HASH_LENGTH, actual_hash_len);
+                printf("🔍 PARSE DEBUG: Expected salt_len=%d, got=%zu\n", PASSWORD_SALT_LENGTH, expected_salt_len);
+                printf("🔍 PARSE DEBUG: Expected hash_len=%d, got=%zu\n", PASSWORD_HASH_LENGTH, expected_hash_len);
             }
         } else {
             printf("🔍 PARSE DEBUG: Iterations validation failed\n");

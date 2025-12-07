@@ -1,10 +1,10 @@
 # Database inspection utility Makefile
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -g -O2
-LDFLAGS = -L../../../libmdbx -lmdbx
 
-# Include paths
-INCLUDES = -I../../../libmdbx
+# libmdbx library paths (matching parent project configuration)
+MDBX_INCLUDES = -I/Users/ahmed/dev/libmdbx/build-local/include
+MDBX_LDFLAGS = /Users/ahmed/dev/libmdbx/build-local/lib/libmdbx.a
 
 # Source files
 SOURCES = db_client.c
@@ -13,7 +13,7 @@ SOURCES = db_client.c
 TARGET = db_client
 
 $(TARGET): $(SOURCES)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(TARGET) $(SOURCES) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(MDBX_INCLUDES) -o $(TARGET) $(SOURCES) $(MDBX_LDFLAGS)
 
 clean:
 	rm -f $(TARGET)

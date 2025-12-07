@@ -89,9 +89,17 @@ int mac_m1_page_free(mac_m1_page_region_t *region, void *ptr, size_t num_pages) 
         return -1;
     }
 
-    // For simplicity, we don't actually free individual pages in this implementation
-    // In a production system, you'd want a more sophisticated free list
-    printf("🍎 MAC M1: Marking %zu pages as freed (ptr: %p)\n", num_pages, ptr);
+    // Simple implementation: if freeing from the end, we can reclaim pages
+    size_t offset = ((char*)ptr - (char*)region->base_addr) / MAC_M1_PAGE_SIZE;
+
+    // If this is the last allocation, we can safely reclaim the pages
+    if (offset + num_pages == region->used_pages) {
+        region->used_pages -= num_pages;
+        printf("🍎 MAC M1: Successfully freed %zu pages (ptr: %p), available: %zu\n",
+               num_pages, ptr, region->total_pages - region->used_pages);
+    } else {
+        printf("🍎 MAC M1: Marking %zu pages as freed (ptr: %p) - cannot reclaim\n", num_pages, ptr);
+    }
 
     // Securely clear the memory
     mac_m1_secure_clear(ptr, num_pages * MAC_M1_PAGE_SIZE);

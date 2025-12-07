@@ -14,7 +14,7 @@
  */
 
 // JWT buffer sizes - optimized for Mac M1 16KB pages
-#define MAC_JWT_MAX_LENGTH 2048
+#define MAC_JWT_MAX_LENGTH 16384
 #define MAC_JWT_BUFFER_SIZE (MAC_JWT_MAX_LENGTH + 16)  // Extra for null terminator and padding
 
 // Crypto buffer magic number for corruption detection

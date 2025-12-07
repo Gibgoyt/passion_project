@@ -21,7 +21,7 @@
 #include "auth_lib/oauth.h"
 #include "auth_lib/json_utils.h"
 #include "memory/platform_detection.h"
-// #include "memory/jwt_storage_compat.h" // TODO: Implement compatibility layer
+#include "memory/jwt_storage_compat.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -227,13 +227,20 @@ int parse_http_request(const char *data, size_t length, http_request_t *request)
                 strncpy(auth_header_str, auth, auth_length);
                 auth_header_str[auth_length] = '\0';
 
-                // TODO: Implement JWT token extraction with new crypto buffer system
                 printf("🔍 Authorization header found: %.50s...\n", auth_header_str);
 
-                free(auth_header_str);
+                // Use the existing JWT storage compatibility layer
+                jwt_storage_result_t extract_result = jwt_storage_extract_bearer_token(
+                    request->jwt_auth, auth_header_str);
 
-                // Temporary placeholder - JWT extraction to be implemented
-                printf("⚠️ JWT token extraction temporarily disabled\n");
+                if (extract_result == JWT_STORAGE_SUCCESS) {
+                    size_t token_len = jwt_storage_get_length(request->jwt_auth);
+                    printf("✅ JWT token extracted successfully: %zu bytes\n", token_len);
+                } else {
+                    printf("❌ Failed to extract JWT token from Authorization header (error: %d)\n", extract_result);
+                }
+
+                free(auth_header_str);
             } else {
                 printf("❌ Memory allocation failed for authorization header\n");
             }
