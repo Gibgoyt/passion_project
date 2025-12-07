@@ -25,11 +25,11 @@ AUTH_LIB_SRCS = auth_lib/base64url.c auth_lib/userid.c auth_lib/email.c \
                 auth_lib/pkce.c auth_lib/oauth.c
 
 # Platform-specific memory management sources
-# Automatically selects Mac M1 or Oracle A1.Flex implementation
+# Uses robust Mac M1 2022 implementation for Apple Silicon
 MEMORY_SRCS = memory/platform_detection.c \
-              ../mac/m2/page_allocator/page_allocator.c \
-              ../mac/m2/page_allocator/jwt_storage.c \
-              ../mac/m2/page_allocator/memory_validation.c \
+              memory/mac_m1_2022/page_allocator.c \
+              memory/mac_m1_2022/jwt_storage.c \
+              memory/mac_m1_2022/memory_validation.c \
               memory/jwt_storage_compat.c
 
 AUTH_LIB_OBJS = $(AUTH_LIB_SRCS:.c=.o)

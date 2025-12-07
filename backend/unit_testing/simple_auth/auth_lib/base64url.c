@@ -126,15 +126,51 @@ int base64url_decode(const char *input, size_t input_len,
     }
     standard_b64[padded_len] = '\0';
 
-    // Decode using OpenSSL
-    size_t actual_string_len = strlen(standard_b64);
-    int result = EVP_DecodeBlock(output, (unsigned char*)standard_b64, actual_string_len);
+    // Manual base64url decoding to avoid EVP_DecodeBlock padding issues
+    // Base64url alphabet: A-Z, a-z, 0-9, -, _
+    static const unsigned char decode_table[256] = {
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,  62, 255,  62, 255,  63, // '+' and '/' for standard base64, '-' for base64url
+         52,  53,  54,  55,  56,  57,  58,  59,  60,  61, 255, 255, 255,   0, 255, 255, // '0'-'9', '=' for padding
+        255,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14, // 'A'-'O'
+         15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25, 255, 255, 255, 255,  63, // 'P'-'Z', '_' for base64url
+        255,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40, // 'a'-'o'
+         41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51, 255, 255, 255, 255, 255, // 'p'-'z'
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+    };
 
-    if (result >= 0) {
-        return result;
-    } else {
-        return -1;
+    size_t out_len = 0;
+    unsigned int accumulator = 0;
+    int bits = 0;
+
+    // Process each character
+    for (size_t j = 0; j < input_len; j++) {
+        unsigned char c = input[j];
+        unsigned char val = decode_table[c];
+
+        if (val == 255) {
+            // Invalid character
+            return -1;
+        }
+
+        accumulator = (accumulator << 6) | val;
+        bits += 6;
+
+        if (bits >= 8) {
+            output[out_len++] = (accumulator >> (bits - 8)) & 0xFF;
+            bits -= 8;
+        }
     }
+
+    return (int)out_len;
 }
 
 int base64url_encode_json(const char *json_string, char *output, size_t output_len) {

@@ -22,9 +22,9 @@
 
 // Include platform-specific headers
 #ifdef PLATFORM_MAC_M1
-    #include "../../mac/m2/page_allocator/page_allocator.h"
-    #include "../../mac/m2/page_allocator/jwt_storage.h"
-    #include "../../mac/m2/page_allocator/memory_validation.h"
+    #include "mac_m1_2022/page_allocator.h"
+    #include "mac_m1_2022/jwt_storage.h"
+    #include "mac_m1_2022/memory_validation.h"
 
     // Create aliases for platform-neutral code
     typedef mac_m1_page_region_t page_region_t;
