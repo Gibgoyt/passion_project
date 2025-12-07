@@ -1,9 +1,9 @@
 #!/bin/bash
 
 refreshToken=$1
-bodyFile="/home/opc/splitdo/new/unit_testing/simple_auth/test_scripts/endpoints/auth/refresh/POST_BODY.json"
+bodyFile="/Users/ahmed/Projects/Astro/passion_project/backend/unit_testing/simple_auth/test_scripts/endpoints/auth/refresh/POST_BODY.json"
 
-source /home/opc/splitdo/new/unit_testing/simple_auth/test_scripts/endpoints/env.sh
+source /Users/ahmed/Projects/Astro/passion_project/backend/unit_testing/simple_auth/test_scripts/endpoints/env.sh
 
 sed \
 	-i \

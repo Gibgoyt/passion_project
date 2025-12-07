@@ -1,6 +1,6 @@
 #include "jwt_rs256.h"
 #include "base64url.h"
-#include "../memory/jwt_storage.h"
+#include "../memory/platform_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -299,16 +299,16 @@ int jwt_create_signature(const char *signing_input,
     }
 
     // Allocate secure buffer for binary signature
-    crypto_buffer_t *sig_buffer = crypto_buffer_alloc(signature_len);
+    crypto_buffer_t *sig_buffer = platform_crypto_buffer_alloc(signature_len);
     if (!sig_buffer) {
         EVP_MD_CTX_free(ctx);
         return -1;
     }
-    unsigned char *signature = (unsigned char*)crypto_buffer_get_data(sig_buffer);
+    unsigned char *signature = (unsigned char*)platform_crypto_buffer_get_data(sig_buffer);
 
     // Create signature
     if (EVP_DigestSignFinal(ctx, signature, &signature_len) != 1) {
-        crypto_buffer_free(sig_buffer);
+        platform_crypto_buffer_free(sig_buffer);
         EVP_MD_CTX_free(ctx);
         return -1;
     }
@@ -317,7 +317,7 @@ int jwt_create_signature(const char *signing_input,
 
     // Encode signature to base64url
     int encoded_len = base64url_encode(signature, signature_len, signature_out, sig_len);
-    crypto_buffer_free(sig_buffer);
+    platform_crypto_buffer_free(sig_buffer);
 
     if (encoded_len <= 0) {
         return -1;
@@ -337,36 +337,36 @@ int jwt_verify_signature(const char *signing_input,
     size_t sig_decode_len = base64url_decode_len(strlen(signature));
 
     // Allocate secure buffer for signature decoding
-    crypto_buffer_t *sig_buffer = crypto_buffer_alloc(sig_decode_len);
+    crypto_buffer_t *sig_buffer = platform_crypto_buffer_alloc(sig_decode_len);
     if (!sig_buffer) {
         return -1;
     }
-    unsigned char *sig_binary = (unsigned char*)crypto_buffer_get_data(sig_buffer);
+    unsigned char *sig_binary = (unsigned char*)platform_crypto_buffer_get_data(sig_buffer);
 
     int decoded_len = base64url_decode(signature, 0, sig_binary, sig_decode_len);
     if (decoded_len <= 0) {
-        crypto_buffer_free(sig_buffer);
+        platform_crypto_buffer_free(sig_buffer);
         return -1;
     }
 
     // Create verification context
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     if (!ctx) {
-        crypto_buffer_free(sig_buffer);
+        platform_crypto_buffer_free(sig_buffer);
         return -1;
     }
 
     // Initialize verification
     if (EVP_DigestVerifyInit(ctx, NULL, EVP_sha256(),
                                            NULL, keypair->public_key) != 1) {
-        crypto_buffer_free(sig_buffer);
+        platform_crypto_buffer_free(sig_buffer);
         EVP_MD_CTX_free(ctx);
         return -1;
     }
 
     // Update with signing input
     if (EVP_DigestVerifyUpdate(ctx, signing_input, strlen(signing_input)) != 1) {
-        crypto_buffer_free(sig_buffer);
+        platform_crypto_buffer_free(sig_buffer);
         EVP_MD_CTX_free(ctx);
         return -1;
     }
@@ -374,7 +374,7 @@ int jwt_verify_signature(const char *signing_input,
     // Verify signature
     int verify_result = EVP_DigestVerifyFinal(ctx, sig_binary, decoded_len);
 
-    crypto_buffer_free(sig_buffer);
+    platform_crypto_buffer_free(sig_buffer);
     EVP_MD_CTX_free(ctx);
 
     return verify_result == 1 ? 1 : 0;

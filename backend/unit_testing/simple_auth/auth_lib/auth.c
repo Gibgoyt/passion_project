@@ -25,10 +25,17 @@ int auth_open_database(const char *path, MDBX_env **env_out) {
         return -1;
     }
 
-    // Create directory if it doesn't exist
+    // Create parent data directory if it doesn't exist
     struct stat st = {0};
     if (stat("data", &st) == -1) {
         if (mkdir("data", 0755) != 0) {
+            return -1;
+        }
+    }
+
+    // Create specific database directory if it doesn't exist
+    if (stat(path, &st) == -1) {
+        if (mkdir(path, 0755) != 0) {
             return -1;
         }
     }
@@ -46,8 +53,12 @@ int auth_open_database(const char *path, MDBX_env **env_out) {
     }
 
     // Open the database
-    rc = mdbx_env_open(*env_out, path, 0, 0664);
+    rc = mdbx_env_open(*env_out, path, MDBX_CREATE, 0664);
     if (rc != MDBX_SUCCESS) {
+        printf("❌ MDBX Error: Failed to open %s\n", path);
+        printf("   Error code: %d (%s)\n", rc, mdbx_strerror(rc));
+        printf("   Database path: %s\n", path);
+        printf("   Attempted flags: MDBX_CREATE\n");
         mdbx_env_close(*env_out);
         return -1;
     }
@@ -76,50 +87,70 @@ int auth_initialize(auth_context_t *ctx, const auth_config_t *config) {
     }
 
     // Initialize JWKS
+    printf("🔧 Initializing JWKS...\n");
     jwks_init(&ctx->jwks);
     if (jwks_add_key(&ctx->jwks, &ctx->keypair) != 0) {
+        printf("❌ Failed to add key to JWKS\n");
         rsa_free_keypair(&ctx->keypair);
         return -1;
     }
+    printf("✅ JWKS initialized successfully\n");
 
     // Open databases
+    printf("🔧 Opening databases...\n");
     char db_path[600];
 
     // Users database
+    printf("🔧 Opening users database...\n");
     snprintf(db_path, sizeof(db_path), "%s/users", ctx->config.database_path);
     if (auth_open_database(db_path, &ctx->users_env) != 0) {
+        printf("❌ Failed to open users database at: %s\n", db_path);
         auth_cleanup(ctx);
         return -1;
     }
+    printf("✅ Users database opened\n");
 
     // Email index database
+    printf("🔧 Opening email index database...\n");
     snprintf(db_path, sizeof(db_path), "%s/email_index", ctx->config.database_path);
     if (auth_open_database(db_path, &ctx->email_index_env) != 0) {
+        printf("❌ Failed to open email index database at: %s\n", db_path);
         auth_cleanup(ctx);
         return -1;
     }
+    printf("✅ Email index database opened\n");
 
     // Sessions database
+    printf("🔧 Opening sessions database...\n");
     snprintf(db_path, sizeof(db_path), "%s/sessions", ctx->config.database_path);
     if (auth_open_database(db_path, &ctx->sessions_env) != 0) {
+        printf("❌ Failed to open sessions database at: %s\n", db_path);
         auth_cleanup(ctx);
         return -1;
     }
+    printf("✅ Sessions database opened\n");
 
     // Blacklist database
+    printf("🔧 Opening blacklist database...\n");
     snprintf(db_path, sizeof(db_path), "%s/blacklist", ctx->config.database_path);
     if (auth_open_database(db_path, &ctx->blacklist_env) != 0) {
+        printf("❌ Failed to open blacklist database at: %s\n", db_path);
         auth_cleanup(ctx);
         return -1;
     }
+    printf("✅ Blacklist database opened\n");
 
     // OAuth clients database
+    printf("🔧 Opening OAuth clients database...\n");
     snprintf(db_path, sizeof(db_path), "%s/clients", ctx->config.database_path);
     if (auth_open_database(db_path, &ctx->clients_env) != 0) {
+        printf("❌ Failed to open OAuth clients database at: %s\n", db_path);
         auth_cleanup(ctx);
         return -1;
     }
+    printf("✅ OAuth clients database opened\n");
 
+    printf("✅ All databases opened successfully\n");
     ctx->is_initialized = 1;
     return 0;
 }

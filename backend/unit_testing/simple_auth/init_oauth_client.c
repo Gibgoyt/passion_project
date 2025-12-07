@@ -7,6 +7,7 @@
 
 #include "auth_lib/auth.h"
 #include "auth_lib/oauth.h"
+#include "memory/platform_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +47,14 @@ int main(int argc, char *argv[]) {
         printf("🔧 Initializing OAuth clients for testing...\n");
     }
 
+    // Initialize memory system first
+    if (memory_system_init() != 0) {
+        if (!check_mode) {
+            printf("❌ Failed to initialize memory system\n");
+        }
+        return 1;
+    }
+
     // Initialize authentication context
     auth_context_t auth_ctx;
     auth_config_t config;
@@ -62,6 +71,7 @@ int main(int argc, char *argv[]) {
     if (check_mode) {
         int clients_exist = check_clients_exist(&auth_ctx);
         auth_cleanup(&auth_ctx);
+        memory_system_cleanup();
         return clients_exist ? 0 : 1; // Exit code 0 if all clients exist, 1 if any missing
     }
 
@@ -84,6 +94,7 @@ int main(int argc, char *argv[]) {
     } else {
         printf("❌ Failed to create Astro test client\n");
         auth_cleanup(&auth_ctx);
+        memory_system_cleanup();
         return 1;
     }
 
@@ -104,6 +115,7 @@ int main(int argc, char *argv[]) {
     } else {
         printf("❌ Failed to create SPA/Mobile test client\n");
         auth_cleanup(&auth_ctx);
+        memory_system_cleanup();
         return 1;
     }
 
@@ -124,6 +136,7 @@ int main(int argc, char *argv[]) {
     } else {
         printf("❌ Failed to create development client\n");
         auth_cleanup(&auth_ctx);
+        memory_system_cleanup();
         return 1;
     }
 
@@ -154,6 +167,7 @@ int main(int argc, char *argv[]) {
 
     // Cleanup
     auth_cleanup(&auth_ctx);
+    memory_system_cleanup();
 
     printf("\n🎉 OAuth client initialization complete!\n");
     printf("\n💡 Available test clients:\n");

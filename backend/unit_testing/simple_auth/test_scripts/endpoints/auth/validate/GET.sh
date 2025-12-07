@@ -2,7 +2,7 @@
 
 accessToken=$1
 
-source /home/opc/splitdo/new/unit_testing/simple_auth/test_scripts/endpoints/env.sh
+source /Users/ahmed/Projects/Astro/passion_project/backend/unit_testing/simple_auth/test_scripts/endpoints/env.sh
 
 curl \
 	-k \

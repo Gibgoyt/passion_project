@@ -1,62 +1,157 @@
-# Mac M2 Page Allocator Unit Testing
+# Mac M2 Memory System Unit Tests
 
-This directory contains standalone unit tests for the Apple Silicon M1/M2 memory management system used in the authentication server.
+Comprehensive test suite for the Mac M1/M2 Apple Silicon memory management system.
+
+## Overview
+
+This directory contains unit tests specifically designed for the Mac M1/M2 memory allocator that handles:
+
+- **16KB Page Management**: Optimized for Apple Silicon's 16KB page size
+- **Secure JWT Storage**: Crypto buffer allocation with integrity checking
+- **Memory Locking**: Page-level memory protection and locking
+- **Performance Testing**: Allocation/deallocation performance benchmarks
+- **Corruption Detection**: Magic number validation and integrity checks
 
 ## Features Tested
 
-- **16KB Page Allocation**: Apple Silicon optimized page management
-- **Secure Memory Operations**: Memory locking and secure clearing
-- **JWT Storage**: Cryptographic buffer management for JWT tokens
-- **Platform Detection**: Automatic Mac M1/M2 detection and optimization
-- **Performance Testing**: Allocation/deallocation performance benchmarks
+### ✅ Core Functionality
+- Memory system initialization and cleanup
+- Crypto buffer allocation and deallocation
+- Data integrity and validation
+- Multiple buffer management
+- Buffer size limits and validation
+
+### ✅ Performance
+- Allocation/deallocation speed benchmarks
+- Memory usage efficiency
+- Stress testing with rapid allocations
+
+### ✅ Security
+- Memory corruption detection
+- Magic number validation
+- Secure memory clearing
+- Buffer integrity checks
+
+### ✅ Platform-Specific
+- 16KB page size optimization
+- Apple Silicon memory architecture
+- macOS-specific memory locking
+- Platform detection
 
 ## Quick Start
 
 ```bash
-# Clean any previous builds
-make clean
-
-# Build and run tests
+# Build and run all tests
 make test
 
-# Or build manually and run
-make
-./test_mac_memory
+# Run performance benchmarks
+make benchmark
+
+# Check for memory leaks (basic test on macOS)
+make memcheck
+
+# Clean build artifacts
+make clean
+
+# Show all available commands
+make help
 ```
 
-## Build Targets
+## Test Categories
 
-- `make` or `make all` - Build the test program
-- `make clean` - Remove build artifacts
-- `make test` - Build and run all tests
-- `make debug` - Build with debug symbols
-- `make info` - Show build information
-- `make install` - Install to /usr/local/bin (requires sudo)
+### 1. Basic Operations
+- Memory system initialization
+- Buffer allocation/deallocation
+- Data read/write operations
 
-## Expected Output
+### 2. Multiple Buffer Management
+- Concurrent buffer allocation
+- Buffer validation across multiple instances
+- Proper cleanup of multiple buffers
 
-The test should show:
-- ✅ Memory system validation passed
-- ✅ Page allocator validation complete
-- ✅ JWT storage validation complete
-- ✅ Performance tests passed
+### 3. Size Limit Testing
+- Zero-size allocation rejection
+- Maximum size allocation (2048 bytes)
+- Oversized allocation rejection
 
-## Current Known Issues
+### 4. Performance Benchmarks
+- 1000-iteration allocation/deallocation cycle
+- Average time per operation measurement
+- Performance target validation (< 1ms per cycle)
 
-1. **Memory Deallocation**: The allocator doesn't properly track freed pages, causing allocation failures after multiple alloc/free cycles
-2. **Page Reuse**: Need to implement proper free page tracking for memory reuse
+### 5. Corruption Detection
+- Magic number validation
+- Buffer integrity verification
+- Corruption simulation and detection
 
-## System Requirements
+### 6. Platform Features
+- 16KB page size verification
+- Memory locking capabilities
+- Platform-specific optimizations
 
-- Apple Silicon Mac (M1/M2/M3)
-- macOS with 16KB page size
-- GCC or Clang compiler
-- Memory locking privileges (for mlock tests)
+### 7. Stress Testing
+- 100+ rapid allocation/deallocation cycles
+- Variable buffer sizes
+- Success rate measurement
+
+## Expected Results
+
+When all tests pass, you should see:
+
+```
+🎉 ALL TESTS PASSED!
+✅ Mac M2 memory system is fully functional
+🚀 Ready for production deployment
+```
+
+## Performance Targets
+
+- **Allocation Speed**: < 1ms per allocation/deallocation cycle
+- **Success Rate**: > 80% success rate under stress conditions
+- **Memory Efficiency**: Optimal use of 16KB pages
+- **Validation Speed**: Instant buffer integrity checking
+
+## Dependencies
+
+- **macOS**: Required (Apple Silicon M1/M2)
+- **Xcode Command Line Tools**: For GCC compiler
+- **16KB Page Support**: Automatic on Apple Silicon
 
 ## Architecture
 
-- **page_allocator.c/h**: Core 16KB page management
-- **jwt_storage.c/h**: Secure JWT token storage
-- **memory_validation.c/h**: Comprehensive system validation
-- **platform_detection.c/h**: Cross-platform compatibility layer
-- **test_mac_memory.c**: Main test program
+The memory system uses a platform-detection layer that automatically selects the Mac M1/M2 implementation:
+
+```
+Platform Detection Layer
+         ↓
+Mac M1/M2 Implementation
+         ↓
+16KB Page Allocator → JWT Storage → Crypto Buffers
+```
+
+## Integration
+
+These unit tests validate the memory system used by the main authentication server. The same memory management code is used in production for:
+
+- JWT token storage and processing
+- Secure cryptographic operations
+- Session management
+- OAuth 2.1 PKCE flow data
+
+## Troubleshooting
+
+If tests fail:
+
+1. **Check Platform**: Ensure running on Mac M1/M2
+2. **Check Permissions**: Some memory locking may require privileges
+3. **Check Memory**: Ensure sufficient available memory
+4. **Check Compilation**: Verify Xcode command line tools installed
+
+## Development
+
+To modify or extend tests:
+
+1. Add new test functions following the pattern in `test_mac_m2_memory.c`
+2. Use the `TEST_START`, `TEST_ASSERT`, and `TEST_END` macros
+3. Update the main function to call new tests
+4. Rebuild with `make clean && make test`

@@ -269,7 +269,7 @@ int mac_jwt_storage_stats(size_t* used_bytes, size_t* total_bytes) {
         return -1;
     }
 
-    *used_bytes = g_mac_jwt_region.used_pages * MAC_M1_PAGE_SIZE;
+    *used_bytes = g_mac_jwt_region.allocated_pages * MAC_M1_PAGE_SIZE;
     *total_bytes = g_mac_jwt_region.total_pages * MAC_M1_PAGE_SIZE;
 
     return 0;

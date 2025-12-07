@@ -3,15 +3,15 @@
 
 #include <stddef.h>
 
-// BoringSSL forward declarations
-typedef struct rsa_st RSA;
-typedef struct evp_pkey_st EVP_PKEY;
+// OpenSSL includes for RSA and EVP_PKEY types
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
 
 /**
  * RSA Key Management for JWT RS256 Signatures
  *
  * Handles RSA key pair generation, loading, saving, and management
- * for JWT signing and verification. Uses BoringSSL for cryptographic
+ * for JWT signing and verification. Uses OpenSSL for cryptographic
  * operations.
  *
  * Key Features:

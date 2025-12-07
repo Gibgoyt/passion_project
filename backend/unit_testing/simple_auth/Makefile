@@ -29,7 +29,8 @@ AUTH_LIB_SRCS = auth_lib/base64url.c auth_lib/userid.c auth_lib/email.c \
 MEMORY_SRCS = memory/platform_detection.c \
               memory/mac_m1_2022/page_allocator.c \
               memory/mac_m1_2022/jwt_storage.c \
-              memory/mac_m1_2022/memory_validation.c
+              memory/mac_m1_2022/memory_validation.c \
+              memory/jwt_storage_compat.c
 
 AUTH_LIB_OBJS = $(AUTH_LIB_SRCS:.c=.o)
 MEMORY_OBJS = $(MEMORY_SRCS:.c=.o)

@@ -1,6 +1,6 @@
 #include "rsa_keys.h"
 #include "base64url.h"
-#include "../memory/jwt_storage.h"
+#include "../memory/platform_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -494,18 +494,18 @@ int rsa_get_public_key_components(EVP_PKEY *public_key,
 
     // Convert modulus (n) to binary using secure buffer
     int n_bytes = BN_num_bytes(n);
-    crypto_buffer_t *n_buffer = crypto_buffer_alloc(n_bytes);
+    crypto_buffer_t *n_buffer = platform_crypto_buffer_alloc(n_bytes);
     if (!n_buffer) {
         RSA_free(rsa);
         return -1;
     }
-    unsigned char *n_bin = (unsigned char*)crypto_buffer_get_data(n_buffer);
+    unsigned char *n_bin = (unsigned char*)platform_crypto_buffer_get_data(n_buffer);
 
     BN_bn2bin(n, n_bin);
 
     // Encode modulus to base64url
     int n_encoded = base64url_encode(n_bin, n_bytes, n_out, n_len);
-    crypto_buffer_free(n_buffer);
+    platform_crypto_buffer_free(n_buffer);
 
     if (n_encoded <= 0) {
         RSA_free(rsa);
@@ -514,18 +514,19 @@ int rsa_get_public_key_components(EVP_PKEY *public_key,
 
     // Convert exponent (e) to binary using secure buffer
     int e_bytes = BN_num_bytes(e);
-    crypto_buffer_t *e_buffer = crypto_buffer_alloc(e_bytes);
+    crypto_buffer_t *e_buffer = platform_crypto_buffer_alloc(e_bytes);
     if (!e_buffer) {
+        platform_crypto_buffer_free(n_buffer);
         RSA_free(rsa);
         return -1;
     }
-    unsigned char *e_bin = (unsigned char*)crypto_buffer_get_data(e_buffer);
+    unsigned char *e_bin = (unsigned char*)platform_crypto_buffer_get_data(e_buffer);
 
     BN_bn2bin(e, e_bin);
 
     // Encode exponent to base64url
     int e_encoded = base64url_encode(e_bin, e_bytes, e_out, e_len);
-    crypto_buffer_free(e_buffer);
+    platform_crypto_buffer_free(e_buffer);
 
     RSA_free(rsa);
 

@@ -5,7 +5,7 @@
 #include "email.h"
 #include "password.h"
 #include "jwt_rs256.h"
-#include "../memory/jwt_storage.h"
+#include "../memory/platform_detection.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -490,7 +490,7 @@ int oauth_generate_authorization_code(char *code_out) {
 
     // Use crypto buffer for secure random generation (follows existing patterns)
     printf("🔍 AUTH CODE DEBUG: Allocating crypto buffer (30 bytes)\n");
-    crypto_buffer_t* buffer = crypto_buffer_alloc(30);
+    crypto_buffer_t* buffer = platform_crypto_buffer_alloc(30);
     if (!buffer) {
         printf("❌ AUTH CODE DEBUG: Failed to allocate crypto buffer\n");
         return -1;
@@ -498,10 +498,10 @@ int oauth_generate_authorization_code(char *code_out) {
     printf("✅ AUTH CODE DEBUG: Crypto buffer allocated successfully\n");
 
     // Generate secure random bytes using page-allocated buffer
-    unsigned char *random_bytes = (unsigned char*)crypto_buffer_get_data(buffer);
+    unsigned char *random_bytes = (unsigned char*)platform_crypto_buffer_get_data(buffer);
     if (!random_bytes) {
         printf("❌ AUTH CODE DEBUG: Failed to get data from crypto buffer\n");
-        crypto_buffer_free(buffer);
+        platform_crypto_buffer_free(buffer);
         return -1;
     }
     printf("✅ AUTH CODE DEBUG: Got crypto buffer data pointer\n");
@@ -509,7 +509,7 @@ int oauth_generate_authorization_code(char *code_out) {
     printf("🔍 AUTH CODE DEBUG: Generating random bytes\n");
     if (RAND_bytes(random_bytes, 30) != 1) {
         printf("❌ AUTH CODE DEBUG: RAND_bytes failed\n");
-        crypto_buffer_free(buffer);
+        platform_crypto_buffer_free(buffer);
         return -1;
     }
     printf("✅ AUTH CODE DEBUG: Random bytes generated successfully\n");
@@ -521,7 +521,7 @@ int oauth_generate_authorization_code(char *code_out) {
     printf("📝 AUTH CODE DEBUG: base64url_encode returned length: %d\n", encoded_len);
 
     // Secure cleanup using page allocator
-    crypto_buffer_free(buffer);
+    platform_crypto_buffer_free(buffer);
     printf("✅ AUTH CODE DEBUG: Crypto buffer freed\n");
 
     // Flexible length check (learn from working session ID and JWT ID patterns)

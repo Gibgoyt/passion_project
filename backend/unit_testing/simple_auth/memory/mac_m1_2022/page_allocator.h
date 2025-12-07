@@ -25,14 +25,30 @@
 #define MAC_M1_PROT_WRITE  0x2
 #define MAC_M1_PROT_EXEC   0x4
 
-// Page allocator structure for Mac M1
+// Allocation record for tracking individual allocations
+typedef struct allocation_record {
+    size_t start_page;      // Starting page index
+    size_t num_pages;       // Number of pages allocated
+    uint64_t alloc_time;    // Allocation timestamp
+    void *ptr;              // Pointer to allocated memory
+    struct allocation_record *next;  // Next record in list
+} allocation_record_t;
+
+// Page allocator structure for Mac M1 with bitmap tracking
 typedef struct {
     void *base_addr;        // Base address of allocated region
     size_t total_size;      // Total allocated size
-    size_t used_pages;      // Number of pages currently used
     size_t total_pages;     // Total number of pages allocated
+    size_t allocated_pages; // Actual pages in use (accurate count)
+    uint8_t *page_bitmap;   // 1 bit per page (allocated=1, free=0)
+    size_t bitmap_size;     // Size of bitmap in bytes
+    size_t search_hint;     // Next search position for allocation
     int is_locked;          // Memory lock status
     uint64_t alloc_time;    // Allocation timestamp
+
+    // Allocation tracking for debugging and validation
+    allocation_record_t *alloc_list;  // Linked list of allocations
+    size_t num_allocations;           // Number of active allocations
 } mac_m1_page_region_t;
 
 /**
@@ -88,6 +104,28 @@ void mac_m1_secure_clear(void *ptr, size_t size);
  * @param region Page region to cleanup
  */
 void mac_m1_page_cleanup(mac_m1_page_region_t *region);
+
+/**
+ * Find free pages in bitmap
+ * @param region Page region
+ * @param num_pages Number of contiguous pages needed
+ * @param start_hint Starting position for search
+ * @return Starting page index or SIZE_MAX if not found
+ */
+size_t mac_m1_find_free_pages(mac_m1_page_region_t *region, size_t num_pages, size_t start_hint);
+
+/**
+ * Debug allocator state
+ * @param region Page region to debug
+ */
+void mac_m1_debug_allocator(mac_m1_page_region_t *region);
+
+/**
+ * Validate allocator integrity
+ * @param region Page region to validate
+ * @return 1 if valid, 0 if corrupted
+ */
+int mac_m1_validate_allocator(mac_m1_page_region_t *region);
 
 /**
  * Get page size for Mac M1

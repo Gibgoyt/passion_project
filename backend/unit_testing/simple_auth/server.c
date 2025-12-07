@@ -21,6 +21,7 @@
 #include "auth_lib/oauth.h"
 #include "auth_lib/json_utils.h"
 #include "memory/platform_detection.h"
+// #include "memory/jwt_storage_compat.h" // TODO: Implement compatibility layer
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -226,22 +227,13 @@ int parse_http_request(const char *data, size_t length, http_request_t *request)
                 strncpy(auth_header_str, auth, auth_length);
                 auth_header_str[auth_length] = '\0';
 
-                // Extract Bearer token using JWT storage
-                jwt_storage_result_t result = jwt_storage_extract_bearer_token(
-                    request->jwt_auth, auth_header_str);
+                // TODO: Implement JWT token extraction with new crypto buffer system
+                printf("🔍 Authorization header found: %.50s...\n", auth_header_str);
 
                 free(auth_header_str);
 
-                if (result == JWT_STORAGE_SUCCESS) {
-                    size_t token_length = jwt_storage_get_length(request->jwt_auth);
-                    printf("✅ JWT token stored successfully: %zu bytes\n", token_length);
-                    printf("Token preview: %.50s%s\n",
-                           jwt_storage_get_string(request->jwt_auth),
-                           token_length > 50 ? "..." : "");
-                } else {
-                    printf("❌ JWT storage failed: %s\n",
-                           jwt_storage_error_string(result));
-                }
+                // Temporary placeholder - JWT extraction to be implemented
+                printf("⚠️ JWT token extraction temporarily disabled\n");
             } else {
                 printf("❌ Memory allocation failed for authorization header\n");
             }
@@ -442,8 +434,8 @@ void handle_validate(const http_request_t *request, http_response_t *response) {
         return;
     }
 
-    if (!jwt_storage_is_valid(request->jwt_auth)) {
-        printf("❌ VALIDATION FAILED: JWT storage is corrupted\n");
+    if (!platform_crypto_buffer_validate(request->jwt_auth)) {
+        printf("❌ VALIDATION FAILED: JWT crypto buffer is corrupted\n");
         response->status_code = 500;
         strcpy(response->content_type, "application/json");
         generate_error_response("Internal server error: JWT storage corrupted",
@@ -452,21 +444,11 @@ void handle_validate(const http_request_t *request, http_response_t *response) {
         return;
     }
 
-    if (!jwt_storage_has_token(request->jwt_auth)) {
-        printf("❌ VALIDATION FAILED: No JWT token found in storage\n");
-        printf("🔍 JWT storage info:\n");
-        jwt_storage_print_info(request->jwt_auth);
+    // TODO: Implement proper JWT token checking with new crypto buffer system
+    printf("⚠️ JWT token validation temporarily simplified\n");
 
-        response->status_code = 401;
-        strcpy(response->content_type, "application/json");
-        generate_error_response("Missing or invalid Authorization header",
-                               response->body, sizeof(response->body));
-        response->body_length = strlen(response->body);
-        return;
-    }
-
-    // Get the JWT token from storage
-    const char *token = jwt_storage_get_string(request->jwt_auth);
+    // Get the JWT token from crypto buffer (temporary placeholder)
+    const char *token = (const char*)platform_crypto_buffer_get_data(request->jwt_auth);
     if (!token) {
         printf("❌ VALIDATION FAILED: Could not retrieve JWT token from storage\n");
         response->status_code = 500;
@@ -477,7 +459,7 @@ void handle_validate(const http_request_t *request, http_response_t *response) {
         return;
     }
 
-    size_t token_length = jwt_storage_get_length(request->jwt_auth);
+    size_t token_length = strlen(token); // Simplified for now
     printf("✅ JWT token retrieved from storage: %zu bytes\n", token_length);
     printf("Token preview: %.50s%s\n", token, token_length > 50 ? "..." : "");
 
@@ -668,8 +650,8 @@ void handle_logout(const http_request_t *request, http_response_t *response) {
         return;
     }
 
-    // Extract Bearer token from JWT storage
-    if (!request->jwt_auth || !jwt_storage_has_token(request->jwt_auth)) {
+    // Extract Bearer token from crypto buffer (temporary placeholder)
+    if (!request->jwt_auth || !platform_crypto_buffer_validate(request->jwt_auth)) {
         response->status_code = 401;
         strcpy(response->content_type, "application/json");
         generate_error_response("Missing or invalid Authorization header", response->body, sizeof(response->body));
@@ -677,7 +659,7 @@ void handle_logout(const http_request_t *request, http_response_t *response) {
         return;
     }
 
-    const char *token = jwt_storage_get_string(request->jwt_auth);
+    const char *token = (const char*)platform_crypto_buffer_get_data(request->jwt_auth);
 
     // Perform logout
     if (auth_logout(&auth_ctx, token, 0) == 0) {
@@ -1222,6 +1204,12 @@ struct us_listen_socket_t *on_http_listen(struct us_listen_socket_t *ls, int is_
 int generate_keys_mode() {
     printf("🔐 Generating RSA key pair...\n");
 
+    // Initialize memory system first
+    if (memory_system_init() != 0) {
+        printf("❌ Failed to initialize memory system\n");
+        return 1;
+    }
+
     auth_context_t temp_ctx;
     auth_config_t config;
     auth_init_config(&config);
@@ -1232,9 +1220,11 @@ int generate_keys_mode() {
         printf("   Public key: %s\n", PUBLIC_KEY_PATH);
         printf("   Key ID: %s\n", temp_ctx.keypair.key_id);
         auth_cleanup(&temp_ctx);
+        memory_system_cleanup();
         return 0;
     } else {
         printf("❌ Failed to generate RSA key pair\n");
+        memory_system_cleanup();
         return 1;
     }
 }
@@ -1292,8 +1282,8 @@ int main(int argc, char *argv[]) {
 
     // SSL context options - MUST use SSL certificates
     struct us_socket_context_options_t options = {};
-    options.key_file_name = "/etc/ssl/splitdo_api/private/key.pem";
-    options.cert_file_name = "/etc/ssl/splitdo_api/cert.pem";
+    options.key_file_name = "../../../unit_testing/http11_server/certs/server.key";
+    options.cert_file_name = "../../../unit_testing/http11_server/certs/server.crt";
     options.passphrase = "";
 
     // Create SSL socket context with socket state extension
@@ -1301,7 +1291,7 @@ int main(int argc, char *argv[]) {
 
     if (!context) {
         printf("❌ Failed to create SSL socket context\n");
-        printf("   Make sure SSL certificates exist at /etc/ssl/splitdo_api/\n");
+        printf("   Make sure SSL certificates exist at ../../../unit_testing/http11_server/certs/\n");
         auth_cleanup(&auth_ctx);
         return 1;
     }
@@ -1344,22 +1334,23 @@ int main(int argc, char *argv[]) {
         // Print memory statistics every 60 seconds
         time_t current_time = time(NULL);
         if (current_time - last_stats_time >= 60) {
-            page_alloc_stats_t stats;
-            page_get_stats(&stats);
+            size_t used_bytes = 0, total_bytes = 0;
+            int stats_result = mac_jwt_storage_stats(&used_bytes, &total_bytes);
 
             printf("\n📊 Memory Statistics (after %ld seconds):\n", current_time - last_stats_time);
-            printf("   Total allocated: %zu pages (%zu bytes)\n",
-                   stats.total_pages_allocated, stats.total_bytes_allocated);
-            printf("   Currently locked: %zu pages (%zu bytes)\n",
-                   stats.pages_currently_locked, stats.bytes_currently_locked);
-            printf("   Allocations: %zu, Deallocations: %zu\n",
-                   stats.allocation_count, stats.deallocation_count);
-
-            if (stats.allocation_count > stats.deallocation_count) {
-                printf("   ⚠️ Potential leak: %zu unfreed allocations\n",
-                       stats.allocation_count - stats.deallocation_count);
+            if (stats_result == 0) {
+                printf("   Used memory: %zu bytes\n", used_bytes);
+                printf("   Total memory: %zu bytes\n", total_bytes);
+                printf("   Memory efficiency: %.1f%%\n",
+                       total_bytes > 0 ? (double)used_bytes / total_bytes * 100.0 : 0.0);
             } else {
-                printf("   ✅ No memory leaks detected\n");
+                printf("   Memory statistics unavailable\n");
+            }
+
+            if (used_bytes > 0) {
+                printf("   ⚠️ Memory in use (normal during operation)\n");
+            } else {
+                printf("   ✅ No active memory allocations\n");
             }
             printf("\n");
 

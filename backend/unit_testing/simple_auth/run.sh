@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # surely there is a better way to check if we are running the script from the current dir
-CURRENT_DIR="/home/opc/splitdo/new/unit_testing/simple_auth"
+CURRENT_DIR="/Users/ahmed/Projects/Astro/passion_project/backend/unit_testing/simple_auth"
 
 if [ ! $PWD == $CURRENT_DIR ]; then
 	echo "are you sure you are running in the current dir??"
