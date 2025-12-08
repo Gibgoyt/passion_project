@@ -1,5 +1,5 @@
-import * as Users from './_api/v1/users/index.ts'
+import * as _Api from './_api/index.ts'
 
 export const Endpoints = {
-	Users
+	_Api
 }

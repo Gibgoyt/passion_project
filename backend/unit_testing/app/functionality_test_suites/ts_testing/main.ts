@@ -21,13 +21,13 @@ async function test_basicFlow() {
 	try {
 		// 1. GET all users
 		console.log("1. GET /api/v1/users")
-		const listResult1 = await Endpoints.Users.GET()
+		const listResult1 = await Endpoints._Api.V1.Users.GET()
 		console.log(JSON.stringify(listResult1, null, 2))
 		console.log("---------------------------------------\n")
 
 		// 2. Create User
 		console.log("2. POST /api/v1/users (Create Ahmed Moti)")
-		const createResult = await Endpoints.Users.POST("Ahmed", "Moti")
+		const createResult = await Endpoints._Api.V1.Users.POST("Ahmed", "Moti")
 		console.log(JSON.stringify(createResult, null, 2))
 		
 		if (createResult.status !== 201) {
@@ -40,37 +40,37 @@ async function test_basicFlow() {
 
 		// 3. GET all users
 		console.log("3. GET /api/v1/users")
-		const listResult2 = await Endpoints.Users.GET()
+		const listResult2 = await Endpoints._Api.V1.Users.GET()
 		console.log(JSON.stringify(listResult2, null, 2))
 		console.log("---------------------------------------\n")
 
 		// 4. GET single user
 		console.log(`4. GET /api/v1/users/${userId}`)
-		const getResult1 = await Endpoints.Users[':UserId'].GET(userId)
+		const getResult1 = await Endpoints._Api.V1.Users[':UserId'].GET(userId)
 		console.log(JSON.stringify(getResult1, null, 2))
 		console.log("---------------------------------------\n")
 
 		// 5. Update user
 		console.log(`5. PUT /api/v1/users/${userId} (Change name to Ahmed Hashim)`)
-		const updateResult = await Endpoints.Users[':UserId'].PUT(userId, "Ahmed Hashim", "Moti")
+		const updateResult = await Endpoints._Api.V1.Users[':UserId'].PUT(userId, "Ahmed Hashim", "Moti")
 		console.log(JSON.stringify(updateResult, null, 2))
 		console.log("---------------------------------------\n")
 
 		// 6. GET user again
 		console.log(`6. GET /api/v1/users/${userId}`)
-		const getResult2 = await Endpoints.Users[':UserId'].GET(userId)
+		const getResult2 = await Endpoints._Api.V1.Users[':UserId'].GET(userId)
 		console.log(JSON.stringify(getResult2, null, 2))
 		console.log("---------------------------------------\n")
 
 		// 7. DELETE user
 		console.log(`7. DELETE /api/v1/users/${userId}`)
-		const deleteResult = await Endpoints.Users[':UserId'].DELETE(userId)
+		const deleteResult = await Endpoints._Api.V1.Users[':UserId'].DELETE(userId)
 		console.log(JSON.stringify(deleteResult, null, 2))
 		console.log("---------------------------------------\n")
 
 		// 8. GET all users
 		console.log("8. GET /api/v1/users")
-		const listResult3 = await Endpoints.Users.GET()
+		const listResult3 = await Endpoints._Api.V1.Users.GET()
 		console.log(JSON.stringify(listResult3, null, 2))
 		console.log("---------------------------------------\n")
 
