@@ -49,6 +49,9 @@ export default defineConfig({
       wasm(),
       topLevelAwait(),
     ],
+    define: {
+      'process.env.BASE_URL': JSON.stringify('https://localhost:2053')
+    },
     resolve: {
       conditions: [
         'import',

@@ -92,6 +92,9 @@ void send_json_response(struct us_socket_t *s, int status, cJSON *json) {
     int header_len = snprintf(headers, sizeof(headers),
         "HTTP/1.1 %d %s\r\n"
         "Content-Type: application/json\r\n"
+        "Access-Control-Allow-Origin: *\r\n"
+        "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS\r\n"
+        "Access-Control-Allow-Headers: Content-Type\r\n"
         "Content-Length: %zu\r\n"
         "Connection: close\r\n"
         "\r\n",
@@ -105,6 +108,21 @@ void send_json_response(struct us_socket_t *s, int status, cJSON *json) {
     us_socket_close(ENABLE_SSL, s, 0, NULL);
     
     free(body);
+}
+
+/* Helper: Send OPTIONS Response for CORS */
+void send_options_response(struct us_socket_t *s) {
+    char headers[1024];
+    int header_len = snprintf(headers, sizeof(headers),
+        "HTTP/1.1 204 No Content\r\n"
+        "Access-Control-Allow-Origin: *\r\n"
+        "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS\r\n"
+        "Access-Control-Allow-Headers: Content-Type\r\n"
+        "Connection: close\r\n"
+        "\r\n"
+    );
+    us_socket_write(ENABLE_SSL, s, headers, header_len, 0);
+    us_socket_close(ENABLE_SSL, s, 0, NULL);
 }
 
 /* Helper: Send Error Response */
@@ -376,6 +394,12 @@ void handle_delete_user(struct us_socket_t *s, const char *user_id) {
 
 /* Router */
 void route_request(struct us_socket_t *s, const char *method, const char *url, const char *body) {
+    // Handle Preflight OPTIONS request
+    if (strcmp(method, "OPTIONS") == 0) {
+        send_options_response(s);
+        return;
+    }
+
     // Simple routing
     if (strcmp(method, "GET") == 0) {
         if (strcmp(url, "/api/v1/users") == 0) {
