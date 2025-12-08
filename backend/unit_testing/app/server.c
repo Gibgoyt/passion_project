@@ -443,21 +443,25 @@ struct us_socket_t *on_http_data(struct us_socket_t *s, char *data, int length) 
     ctx->length += length;
     
     // Simple check for full request (header end)
-    // Note: This is a simplified HTTP parser for the sake of "very simple server"
-    // A robust one would parse Content-Length properly. 
-    // Here we assume one packet or accumulation until \r\n\r\n + body.
-    
     char *header_end = strstr(ctx->buffer, "\r\n\r\n");
     if (header_end) {
-        // Check content length
+        // Debug: Print request headers
+        printf("Received Request:\n%.*s\n", (int)(header_end - ctx->buffer), ctx->buffer);
+
+        // Check content length (case-insensitive attempt)
         size_t header_len = (header_end - ctx->buffer) + 4;
         size_t body_len = 0;
         
         char *cl = strstr(ctx->buffer, "Content-Length: ");
+        if (!cl) cl = strstr(ctx->buffer, "content-length: ");
+        if (!cl) cl = strstr(ctx->buffer, "Content-length: ");
+        
         if (cl && cl < header_end) {
             body_len = atoi(cl + 16);
         }
         
+        printf("Body Length: %zu\n", body_len);
+
         if (ctx->length >= header_len + body_len) {
             // We have the full request
             
