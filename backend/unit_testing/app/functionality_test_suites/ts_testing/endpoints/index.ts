@@ -1,7 +1,5 @@
-import * as Auth from './auth/index.ts'
-import * as OAuth from './oauth/index.ts'
+import * as Users from './_api/v1/users/index.ts'
 
 export const Endpoints = {
-	Auth,
-	OAuth
+	Users
 }

@@ -1,0 +1,13 @@
+{
+  "name": "app-ts-testing",
+  "version": "1.0.0",
+  "description": "TypeScript functionality testing for App",
+  "type": "module",
+  "main": "main.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types main.ts"
+  },
+  "dependencies": {
+    "@types/node": "^20.0.0"
+  }
+}
