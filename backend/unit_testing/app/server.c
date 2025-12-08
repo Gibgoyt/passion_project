@@ -6,9 +6,10 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <openssl/rand.h>
 
 /* Configuration */
-const int SSL = 1;
+const int ENABLE_SSL = 1;
 const int PORT = 2053;
 const char *DB_PATH = "data";
 const size_t MAX_BODY_SIZE = 1024 * 1024; // 1MB
@@ -16,6 +17,55 @@ const size_t MAX_BODY_SIZE = 1024 * 1024; // 1MB
 /* Global MDBX Environment */
 MDBX_env *env = NULL;
 MDBX_dbi dbi;
+
+/* Base62 Encoding for User IDs */
+static const char BASE62_CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+int base62_encode(const unsigned char *input, size_t input_len, char *output, size_t output_len) {
+    if (!input || !output || input_len == 0 || output_len == 0) return -1;
+    
+    unsigned char num[21]; // Supports up to 21 bytes input (168 bits)
+    if (input_len > sizeof(num)) return -1;
+    
+    memcpy(num, input, input_len);
+    int out_pos = 0;
+
+    while (out_pos < (int)(output_len - 1)) {
+        int is_zero = 1;
+        for (size_t i = 0; i < input_len; i++) {
+            if (num[i] != 0) { is_zero = 0; break; }
+        }
+        if (is_zero && out_pos > 0) break;
+
+        int remainder = 0;
+        for (int i = 0; i < (int)input_len; i++) {
+            int temp = remainder * 256 + num[i];
+            num[i] = temp / 62;
+            remainder = temp % 62;
+        }
+        output[out_pos++] = BASE62_CHARS[remainder];
+    }
+
+    // Pad if needed (for consistent 28 chars)
+    while (out_pos < 28 && out_pos < (int)(output_len - 1)) {
+        output[out_pos++] = BASE62_CHARS[0];
+    }
+
+    // Reverse
+    for (int i = 0; i < out_pos / 2; i++) {
+        char temp = output[i];
+        output[i] = output[out_pos - 1 - i];
+        output[out_pos - 1 - i] = temp;
+    }
+    output[out_pos] = '\0';
+    return 0;
+}
+
+void generate_firebase_userid(char *userid_out) {
+    unsigned char random_bytes[21]; // 168 bits
+    RAND_bytes(random_bytes, sizeof(random_bytes));
+    base62_encode(random_bytes, sizeof(random_bytes), userid_out, 29); // 28 chars + null
+}
 
 /* Socket Extension Data */
 struct socket_context {
@@ -50,9 +100,9 @@ void send_json_response(struct us_socket_t *s, int status, cJSON *json) {
         body_len
     );
 
-    us_socket_write(SSL, s, headers, header_len, 0);
-    us_socket_write(SSL, s, body, body_len, 0);
-    us_socket_close(SSL, s, 0, NULL);
+    us_socket_write(ENABLE_SSL, s, headers, header_len, 0);
+    us_socket_write(ENABLE_SSL, s, body, body_len, 0);
+    us_socket_close(ENABLE_SSL, s, 0, NULL);
     
     free(body);
 }
@@ -195,9 +245,9 @@ void handle_create_user(struct us_socket_t *s, const char *body) {
         return;
     }
 
-    // Generate ID (simple timestamp + rand for simplicity)
+    // Generate ID (Firebase-style)
     char user_id[64];
-    snprintf(user_id, sizeof(user_id), "user_%ld_%d", time(NULL), rand());
+    generate_firebase_userid(user_id);
 
     // Add timestamps
     char now_str[32];
@@ -261,7 +311,8 @@ void handle_update_user(struct us_socket_t *s, const char *user_id, const char *
 
     // Parse existing to preserve createdAt
     cJSON *existing = cJSON_Parse((char*)data.iov_base);
-    cJSON *created_at = cJSON_GetObjectItem(existing, "createdAt");
+    // Remove Unused variable warning
+    // cJSON *created_at = cJSON_GetObjectItem(existing, "createdAt");
     
     // Update fields
     cJSON *name = cJSON_GetObjectItem(json, "name");
@@ -299,6 +350,8 @@ void handle_update_user(struct us_socket_t *s, const char *user_id, const char *
 
 /* Handler: DELETE /api/v1/user/<userId> */
 void handle_delete_user(struct us_socket_t *s, const char *user_id) {
+    printf("DELETE Request for User ID: '%s'\n", user_id); // Debug log
+
     MDBX_txn *txn;
     if (mdbx_txn_begin(env, NULL, 0, &txn) != MDBX_SUCCESS) {
         send_error(s, 500, "Database error");
@@ -307,13 +360,15 @@ void handle_delete_user(struct us_socket_t *s, const char *user_id) {
 
     MDBX_val key = {(void*)user_id, strlen(user_id)};
     
-    if (mdbx_del(txn, dbi, &key, NULL) == MDBX_SUCCESS) {
+    int rc = mdbx_del(txn, dbi, &key, NULL);
+    if (rc == MDBX_SUCCESS) {
         mdbx_txn_commit(txn);
         cJSON *json = cJSON_CreateObject();
         cJSON_AddBoolToObject(json, "success", 1);
         send_json_response(s, 200, json);
         cJSON_Delete(json);
     } else {
+        printf("DELETE Failed: rc=%d (%s)\n", rc, mdbx_strerror(rc)); // Debug log
         mdbx_txn_abort(txn);
         send_error(s, 404, "User not found");
     }
@@ -325,8 +380,8 @@ void route_request(struct us_socket_t *s, const char *method, const char *url, c
     if (strcmp(method, "GET") == 0) {
         if (strcmp(url, "/api/v1/users") == 0) {
             handle_get_users(s);
-        } else if (strncmp(url, "/api/v1/user/", 13) == 0) {
-            handle_get_user(s, url + 13);
+        } else if (strncmp(url, "/api/v1/users/", 14) == 0) {
+            handle_get_user(s, url + 14);
         } else {
             send_error(s, 404, "Not Found");
         }
@@ -337,14 +392,14 @@ void route_request(struct us_socket_t *s, const char *method, const char *url, c
             send_error(s, 404, "Not Found");
         }
     } else if (strcmp(method, "PUT") == 0) {
-        if (strncmp(url, "/api/v1/user/", 13) == 0) {
-            handle_update_user(s, url + 13, body);
+        if (strncmp(url, "/api/v1/users/", 14) == 0) {
+            handle_update_user(s, url + 14, body);
         } else {
             send_error(s, 404, "Not Found");
         }
     } else if (strcmp(method, "DELETE") == 0) {
-        if (strncmp(url, "/api/v1/user/", 13) == 0) {
-            handle_delete_user(s, url + 13);
+        if (strncmp(url, "/api/v1/users/", 14) == 0) {
+            handle_delete_user(s, url + 14);
         } else {
             send_error(s, 404, "Not Found");
         }
@@ -355,7 +410,7 @@ void route_request(struct us_socket_t *s, const char *method, const char *url, c
 
 /* uSockets Event Handlers */
 struct us_socket_t *on_http_open(struct us_socket_t *s, int is_client, char *ip, int ip_length) {
-    struct socket_context *ctx = (struct socket_context *)us_socket_ext(SSL, s);
+    struct socket_context *ctx = (struct socket_context *)us_socket_ext(ENABLE_SSL, s);
     ctx->buffer = malloc(4096);
     ctx->capacity = 4096;
     ctx->length = 0;
@@ -364,13 +419,13 @@ struct us_socket_t *on_http_open(struct us_socket_t *s, int is_client, char *ip,
 }
 
 struct us_socket_t *on_http_close(struct us_socket_t *s, int code, void *reason) {
-    struct socket_context *ctx = (struct socket_context *)us_socket_ext(SSL, s);
+    struct socket_context *ctx = (struct socket_context *)us_socket_ext(ENABLE_SSL, s);
     if (ctx->buffer) free(ctx->buffer);
     return s;
 }
 
 struct us_socket_t *on_http_data(struct us_socket_t *s, char *data, int length) {
-    struct socket_context *ctx = (struct socket_context *)us_socket_ext(SSL, s);
+    struct socket_context *ctx = (struct socket_context *)us_socket_ext(ENABLE_SSL, s);
     
     // Grow buffer if needed
     if (ctx->length + length > ctx->capacity) {
@@ -408,7 +463,8 @@ struct us_socket_t *on_http_data(struct us_socket_t *s, char *data, int length) 
             
             // Null terminate body
             char *body = header_end + 4;
-            char saved_char = body[body_len];
+            // Remove unused variable warning
+            // char saved_char = body[body_len];
             body[body_len] = '\0';
             
             // Parse Method and URL
@@ -431,11 +487,11 @@ struct us_socket_t *on_http_writable(struct us_socket_t *s) {
 }
 
 struct us_socket_t *on_http_timeout(struct us_socket_t *s) {
-    return us_socket_close(SSL, s, 0, NULL);
+    return us_socket_close(ENABLE_SSL, s, 0, NULL);
 }
 
 struct us_socket_t *on_http_end(struct us_socket_t *s) {
-    return us_socket_close(SSL, s, 0, NULL);
+    return us_socket_close(ENABLE_SSL, s, 0, NULL);
 }
 
 /* Main */
@@ -454,21 +510,21 @@ int main() {
     options.cert_file_name = "../../../unit_testing/http11_server/certs/server.crt";
     options.passphrase = "";
 
-    struct us_socket_context_t *context = us_create_socket_context(SSL, loop, sizeof(struct socket_context), options);
+    struct us_socket_context_t *context = us_create_socket_context(ENABLE_SSL, loop, sizeof(struct socket_context), options);
     
     if (!context) {
         fprintf(stderr, "Failed to create SSL context (check cert paths)\n");
         return 1;
     }
 
-    us_socket_context_on_open(SSL, context, on_http_open);
-    us_socket_context_on_data(SSL, context, on_http_data);
-    us_socket_context_on_writable(SSL, context, on_http_writable);
-    us_socket_context_on_close(SSL, context, on_http_close);
-    us_socket_context_on_timeout(SSL, context, on_http_timeout);
-    us_socket_context_on_end(SSL, context, on_http_end);
+    us_socket_context_on_open(ENABLE_SSL, context, on_http_open);
+    us_socket_context_on_data(ENABLE_SSL, context, on_http_data);
+    us_socket_context_on_writable(ENABLE_SSL, context, on_http_writable);
+    us_socket_context_on_close(ENABLE_SSL, context, on_http_close);
+    us_socket_context_on_timeout(ENABLE_SSL, context, on_http_timeout);
+    us_socket_context_on_end(ENABLE_SSL, context, on_http_end);
 
-    struct us_listen_socket_t *listen_socket = us_socket_context_listen(SSL, context, 0, PORT, 0, sizeof(struct socket_context));
+    struct us_listen_socket_t *listen_socket = us_socket_context_listen(ENABLE_SSL, context, 0, PORT, 0, sizeof(struct socket_context));
 
     if (listen_socket) {
         printf("Server listening on https://localhost:%d\n", PORT);
