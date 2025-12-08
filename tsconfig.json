@@ -9,6 +9,9 @@
     "paths": {
       "src/*": [
         "./src/*"
+      ],
+      "@ts-testing/*": [
+        "./backend/unit_testing/app/functionality_test_suites/ts_testing/*"
       ]
     }
   },
