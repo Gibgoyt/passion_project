@@ -4,6 +4,7 @@
     import { Endpoints } from '@ts-testing/endpoints/index.ts';
     import UserModal from './UserModal.svelte';
     import UserDetailModal from './UserDetailModal.svelte';
+    import UserDeleteModal from './UserDeleteModal.svelte';
 
     let users = $state<any[]>([]);
     let loading = $state(true);
@@ -13,6 +14,7 @@
     let isCreateModalOpen = $state(false);
     let isEditModalOpen = $state(false);
     let isDetailModalOpen = $state(false);
+    let isDeleteModalOpen = $state(false);
     
     let selectedUserId = $state('');
     let selectedUserData = $state({ name: '', surname: '' });
@@ -51,6 +53,11 @@
     function openDetailModal(id: string) {
         selectedUserId = id;
         isDetailModalOpen = true;
+    }
+
+    function openDeleteModal(user: any) {
+        selectedUserId = user.id;
+        isDeleteModalOpen = true;
     }
 
     function handleSuccess() {
@@ -120,6 +127,13 @@
                                     >
                                         Edit
                                     </button>
+                                    <span class="text-gray-300">|</span>
+                                    <button 
+                                        onclick={() => openDeleteModal(user)}
+                                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         {/each}
@@ -151,4 +165,11 @@
     isOpen={isDetailModalOpen} 
     userId={selectedUserId} 
     onClose={() => isDetailModalOpen = false} 
+/>
+
+<UserDeleteModal 
+    isOpen={isDeleteModalOpen} 
+    userId={selectedUserId} 
+    onClose={() => isDeleteModalOpen = false} 
+    onSuccess={handleSuccess} 
 />
