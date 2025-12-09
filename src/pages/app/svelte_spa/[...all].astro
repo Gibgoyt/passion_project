@@ -1,0 +1,36 @@
+---
+export const prerender = false;
+import 'src/styles/global.css'
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Svelte SPA - Passion Project</title>
+
+  <script is:inline>
+    // Prevent flash of light mode
+    const isDarkMode = localStorage.getItem('darkMode') === 'true' || 
+        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-zinc-900">
+<div id="root"></div>
+
+<script>
+  import { mount } from 'svelte';
+  import App from 'src/spa_applications/svelte/app/App.svelte';
+
+  const root = document.getElementById('root');
+  if (root) {
+      mount(App, { target: root });
+  }
+</script>
+</body>
+</html>
