@@ -51,11 +51,11 @@
   }
 </script>
 
-<div class="h-screen flex overflow-hidden {isDark ? 'bg-zinc-900 text-gray-100' : 'bg-gray-50 text-gray-900'}">
+<div class="h-screen flex overflow-hidden {isDark ? 'bg-zinc-950 text-gray-100' : 'bg-gray-50 text-gray-900'}">
   <Navigation {currentPage} onPageChange={handlePageChange} {isDark} />
   
   <!-- Main Content -->
-  <main class="flex-1 overflow-auto ml-64 transition-all duration-300">
+  <main class="flex-1 overflow-auto transition-all duration-300 relative w-full">
     {#if currentPage === 'dashboard'}
       <Dashboard {isDark} />
     {:else if currentPage === 'counter'}
