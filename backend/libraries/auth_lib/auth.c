@@ -25,17 +25,28 @@ int auth_open_database(const char *path, MDBX_env **env_out) {
         return -1;
     }
 
-    // Create parent data directory if it doesn't exist
-    struct stat st = {0};
-    if (stat("data", &st) == -1) {
-        if (mkdir("data", 0755) != 0) {
-            return -1;
+    // Create directories recursively
+    char tmp_path[512];
+    strncpy(tmp_path, path, sizeof(tmp_path) - 1);
+    tmp_path[sizeof(tmp_path) - 1] = '\0';
+    
+    for (char *p = tmp_path + 1; *p; p++) {
+        if (*p == '/') {
+            *p = '\0';
+            struct stat st = {0};
+            if (stat(tmp_path, &st) == -1) {
+                if (mkdir(tmp_path, 0755) != 0 && errno != EEXIST) {
+                    return -1;
+                }
+            }
+            *p = '/';
         }
     }
-
-    // Create specific database directory if it doesn't exist
-    if (stat(path, &st) == -1) {
-        if (mkdir(path, 0755) != 0) {
+    
+    // Create the final directory
+    struct stat st = {0};
+    if (stat(tmp_path, &st) == -1) {
+        if (mkdir(tmp_path, 0755) != 0 && errno != EEXIST) {
             return -1;
         }
     }

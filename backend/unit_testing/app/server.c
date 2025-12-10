@@ -6,6 +6,8 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include <openssl/rand.h>
 
 // New Libraries Includes
@@ -18,8 +20,8 @@
 /* Configuration */
 const int ENABLE_SSL = 1;
 const int PORT = 2053;
-const char *DB_PATH = "data";
-const char *AUTH_DB_PATH = "auth_data"; // Separate DB for auth to avoid locking issues
+const char *DB_PATH = "data/app_db";
+const char *AUTH_DB_PATH = "data"; // Use the same data directory
 const size_t MAX_BODY_SIZE = 1024 * 1024; // 1MB
 #define MAX_REQUEST_SIZE 4096 // Defined for buffer sizes
 
@@ -140,30 +142,51 @@ void on_post(struct us_loop_t *loop) {
 int init_db() {
     int rc;
     
+    printf("🔧 MDBX: Initializing main database at '%s'...\n", DB_PATH);
+
     // Create/Open Environment
     rc = mdbx_env_create(&env);
-    if (rc != MDBX_SUCCESS) return -1;
+    if (rc != MDBX_SUCCESS) {
+        fprintf(stderr, "❌ MDBX Error: mdbx_env_create failed: %d (%s)\n", rc, mdbx_strerror(rc));
+        return -1;
+    }
     
     // Set Limits
     rc = mdbx_env_set_geometry(env, -1, -1, 10485760, -1, -1, -1); // 10MB max
-    if (rc != MDBX_SUCCESS) return -1;
+    if (rc != MDBX_SUCCESS) {
+        fprintf(stderr, "❌ MDBX Error: mdbx_env_set_geometry failed: %d (%s)\n", rc, mdbx_strerror(rc));
+        return -1;
+    }
     
     rc = mdbx_env_open(env, DB_PATH, MDBX_NOSUBDIR | MDBX_LIFORECLAIM, 0664);
-    if (rc != MDBX_SUCCESS) return -1;
+    if (rc != MDBX_SUCCESS) {
+        fprintf(stderr, "❌ MDBX Error: mdbx_env_open failed for '%s': %d (%s)\n", DB_PATH, rc, mdbx_strerror(rc));
+        return -1;
+    }
     
     // Open Transaction & DBI
     MDBX_txn *txn;
     rc = mdbx_txn_begin(env, NULL, 0, &txn);
-    if (rc != MDBX_SUCCESS) return -1;
+    if (rc != MDBX_SUCCESS) {
+        fprintf(stderr, "❌ MDBX Error: mdbx_txn_begin failed: %d (%s)\n", rc, mdbx_strerror(rc));
+        return -1;
+    }
     
     rc = mdbx_dbi_open(txn, NULL, MDBX_CREATE, &dbi);
     if (rc != MDBX_SUCCESS) {
+        fprintf(stderr, "❌ MDBX Error: mdbx_dbi_open failed: %d (%s)\n", rc, mdbx_strerror(rc));
         mdbx_txn_abort(txn);
         return -1;
     }
     
     rc = mdbx_txn_commit(txn);
-    return (rc == MDBX_SUCCESS) ? 0 : -1;
+    if (rc != MDBX_SUCCESS) {
+        fprintf(stderr, "❌ MDBX Error: mdbx_txn_commit failed: %d (%s)\n", rc, mdbx_strerror(rc));
+        return -1;
+    }
+
+    printf("✅ MDBX: Main database initialized successfully\n");
+    return 0;
 }
 
 /* -------------------------------------------------------------------------
@@ -877,14 +900,94 @@ struct us_socket_t *on_http_end(struct us_socket_t *s) {
     return us_socket_close(ENABLE_SSL, s, 0, NULL);
 }
 
+/* Forward Declarations */
+void signal_handler(int signal);
+int generate_keys_mode();
+
+/* Signal handler for graceful shutdown */
+static int server_running = 1;
+void signal_handler(int signal) {
+    if (signal == SIGINT || signal == SIGTERM) {
+        printf("\n🛑 Received shutdown signal, stopping server...\n");
+        server_running = 0;
+        // In a real loop we would break, but uSockets loop handling is different.
+        // For now just exit to ensure cleanup happens if we were using a custom loop.
+        exit(0); 
+    }
+}
+
+/**
+ * Key generation mode
+ */
+int generate_keys_mode() {
+    printf("🔐 Generating RSA key pair...\n");
+
+    // Initialize memory system first
+    if (memory_system_init() != 0) {
+        printf("❌ Failed to initialize memory system\n");
+        return 1;
+    }
+
+    auth_context_t temp_ctx;
+    auth_config_t config;
+    auth_init_config(&config);
+
+    if (auth_initialize(&temp_ctx, &config) == 0) {
+        printf("✅ RSA key pair generated successfully\n");
+        printf("   Private key: %s\n", PRIVATE_KEY_PATH);
+        printf("   Public key: %s\n", PUBLIC_KEY_PATH);
+        printf("   Key ID: %s\n", temp_ctx.keypair.key_id);
+        auth_cleanup(&temp_ctx);
+        // memory_system_cleanup(); // Not implemented yet
+        return 0;
+    } else {
+        printf("❌ Failed to generate RSA key pair\n");
+        // memory_system_cleanup();
+        return 1;
+    }
+}
+
 /* Main */
-int main() {
+int main(int argc, char *argv[]) {
+    // Check for key generation mode
+    if (argc > 1 && strcmp(argv[1], "--generate-keys") == 0) {
+        return generate_keys_mode();
+    }
     srand(time(NULL));
     
-    // Initialize Memory System
+    // Initialize platform-specific memory system
+    printf("🔧 Initializing memory system...\n");
     if (memory_system_init() != 0) {
-        fprintf(stderr, "Failed to initialize memory system\n");
+        printf("❌ Failed to initialize memory system\n");
         return 1;
+    }
+    printf("✅ Memory system initialized\n\n");
+
+    // Set up signal handlers
+    signal(SIGINT, signal_handler);
+    signal(SIGTERM, signal_handler);
+
+    // Create data directory if it doesn't exist
+    struct stat st = {0};
+    if (stat("data", &st) == -1) {
+        if (mkdir("data", 0755) != 0) {
+            fprintf(stderr, "Failed to create data directory\n");
+            return 1;
+        }
+    }
+
+    // Check for keys and generate if missing
+    FILE *fp = fopen("keys/private_key.pem", "r");
+    if (fp) {
+        fclose(fp);
+    } else {
+        printf("⚠️ RSA keys not found. Generating new key pair...\n");
+        if (generate_keys_mode() != 0) {
+            fprintf(stderr, "Failed to generate RSA keys\n");
+            return 1;
+        }
+        // Re-init memory system as generate_keys_mode cleans it up
+        memory_system_init();
     }
 
     if (init_db() != 0) {
@@ -942,3 +1045,4 @@ int main() {
     auth_cleanup(&auth_ctx);
     return 0;
 }
+
